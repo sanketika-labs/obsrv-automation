@@ -11,7 +11,7 @@ install_obsrv() {
             terragrunt apply  -var-file=vars/cluster_overrides.tfvars -auto-approve
             ;;
         gcp)
-            # terragrunt init
+            terragrunt init
             # terragrunt plan -var-file=vars/cluster_overrides.tfvars --auto-approve
             # terragrunt apply -var-file=vars/cluster_overrides.tfvars --auto-approve
             # ;;
