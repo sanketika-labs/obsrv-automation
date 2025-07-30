@@ -19,7 +19,7 @@ case $cloud_env in
         ;;
 esac
 
-cp -rf ../{global-values.yaml,global-resource-values.yaml,images.yaml} ./
+cp -rf ../{global-values.yaml,global-resource-values.yaml,images.yaml,kube-prometheus-overrides.yaml} ./
 
 if [ "$2" == "template" ]; then
     cmd="template ${@: 3}"
@@ -62,13 +62,13 @@ migrations)
     ;;
 monitoring)
     cp -rf ../obsrv monitoring
-    cp -rf ../services/{promtail,loki,kube-prometheus-stack,prometheus-pushgateway,kafka-message-exporter,alert-rules} monitoring/charts/
+    cp -rf ../services/{kube-prometheus-stack,prometheus-pushgateway,kafka-message-exporter,alert-rules} monitoring/charts/
 
     if [ -z "$cloud_env" ]; then
         rm -rf monitoring/charts/loki/charts/minio
     fi
     
-    helm $cmd monitoring ./monitoring -n obsrv -f global-resource-values.yaml -f global-values.yaml  -f images.yaml -f $cloud_file_name
+    helm $cmd monitoring ./monitoring -n obsrv -f global-resource-values.yaml -f global-values.yaml  -f images.yaml -f kube-prometheus-overrides.yaml -f $cloud_file_name
     rm -rf monitoring
     ;;
 coreinfra)
