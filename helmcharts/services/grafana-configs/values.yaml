@@ -22,7 +22,7 @@ additionalDataSources:
   type: prometheus
   access: proxy
   uid: prometheus
-  url: http://monitoring-kube-prometheus-prometheus.sunbird.svc.cluster.local:9090
+  url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
   jsonData:
     timeInterval: "5s"
     httpMethod: "POST"
