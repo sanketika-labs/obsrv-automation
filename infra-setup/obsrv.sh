@@ -12,8 +12,18 @@ install_obsrv() {
             ;;
         gcp)
             terragrunt init
-            terragrunt plan -var-file=vars/cluster_overrides.tfvars --auto-approve
-            terragrunt apply -var-file=vars/cluster_overrides.tfvars --auto-approve
+            # terragrunt plan -var-file=vars/cluster_overrides.tfvars --auto-approve
+            # terragrunt apply -var-file=vars/cluster_overrides.tfvars --auto-approve
+            # ;;
+            terragrunt apply \
+            -target module.dataset_api_sa_iam_role \
+            -target module.flink_sa_iam_role \
+            -target module.druid_raw_sa_iam_role \
+            -target module.secor_sa_iam_role \
+            -target module.velero_sa_iam_role \
+            -target module.postgresql_backup_sa_iam_role \
+            -target module.spark_sa_iam_role \
+            -var-file=vars/cluster_overrides.tfvars
             ;;
         *)
             echo "Unknown provider: $provider"

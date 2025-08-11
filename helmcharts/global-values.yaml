@@ -311,11 +311,11 @@ postgresql-migration:
 
 #coreinfra-charts/
 prometheus: &prometheus
-  url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+  url: http://monitoring-kube-prometheus-prometheus.sunbird.svc.cluster.local:9090
 
 loki: &loki
   namespace: *loki-namespace
-  url: http://loki-gateway.loki.svc.cluster.local
+  url: http://loki-gateway.sunbird.svc.cluster.local
 
 promtail:
   namespace: *loki-namespace

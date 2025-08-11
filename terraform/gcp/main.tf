@@ -186,7 +186,7 @@ module "dataset_api_sa_iam_role" {
   ]
   sa_namespace = var.dataset_api_namespace
   sa_name = "${var.dataset_api_namespace}-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
   google_service_account_key_path = "${path.module}/credentials/dataset-api-service-account-key.json"
 }
 
@@ -200,7 +200,7 @@ module "flink_sa_iam_role" {
   ]
   sa_namespace = var.flink_namespace
   sa_name = "${var.flink_namespace}-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
 }
 
 module "druid_raw_sa_iam_role" {
@@ -213,7 +213,7 @@ module "druid_raw_sa_iam_role" {
   ]
   sa_namespace = var.druid_raw_namespace
   sa_name = "${var.druid_raw_namespace}-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
 }
 
 module "secor_sa_iam_role" {
@@ -226,7 +226,7 @@ module "secor_sa_iam_role" {
   ]
   sa_namespace = var.secor_namespace
   sa_name = "${var.secor_namespace}-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
 }
 
 module "velero_sa_iam_role" {
@@ -240,7 +240,7 @@ module "velero_sa_iam_role" {
   ]
   sa_namespace = var.velero_namespace
   sa_name = "${var.velero_namespace}-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
 }
 
 module "postgresql_backup_sa_iam_role" {
@@ -253,7 +253,7 @@ module "postgresql_backup_sa_iam_role" {
   ]
   sa_namespace = var.postgresql_namespace
   sa_name = "${var.postgresql_namespace}-backup-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
 }
 
 module "spark_sa_iam_role" {
@@ -266,7 +266,7 @@ module "spark_sa_iam_role" {
   ]
   sa_namespace = var.spark_namespace
   sa_name = "${var.spark_namespace}-sa"
-  depends_on = [ module.gke_cluster ]
+  # depends_on = [ module.gke_cluster ]
 }
 
 # We use this data provider to expose an access token for communicating with the GKE cluster.
