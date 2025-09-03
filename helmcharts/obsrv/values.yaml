@@ -875,8 +875,9 @@ keycloak:
               "alwaysDisplayInConsole": false,
               "clientAuthenticatorType": "client-secret",
               "secret": "{{ .Values.global.oauth_configs.superset_client_secret }}",
-              "redirectUris": [
-                "http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/oauth-authorized/obsrv"
+               "redirectUris": [
+                      "http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/oauth-authorized/obsrv",
+                      "https://<replace with fmps domain>/oauth-authorized/obsrv"
               ],
               "webOrigins": [
                 "http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}"
