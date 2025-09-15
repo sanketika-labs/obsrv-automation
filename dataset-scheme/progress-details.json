@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "http://api.ekstep.org/event",
+  "$id": "http://api.ekstep.org/progress-details/event",
   "title": "User Course Detailed Progress Schema",
   "type": "object",
   "additionalProperties": true,
