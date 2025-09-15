@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "http://api.ekstep.org/event",
+  "title": "User Course Detailed Progress Schema",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "User ID": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "First Name": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Last Name": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "User Name": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Email ID": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "FMPS ID": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "CIN": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Province": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Org Name": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "User Type": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Learner Profile": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Course Code": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Course Name": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Course ID": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Batch Id": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Batch Name": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Enrolment Date": {
+      "type": "string",
+      "data_type": "date",
+      "additionalProperties": true
+    },
+    "Completion Date": {
+      "type": "string",
+      "data_type": "date",
+      "additionalProperties": true
+    },
+    "Certificate Status": {
+      "type": "string",
+      "additionalProperties": true
+    },
+    "Content Status": {
+      "type": ["object", "string"],
+      "arrival_format": "text",
+      "data_type": "string",
+      "additionalProperties": true
+    }
+  }
+}
