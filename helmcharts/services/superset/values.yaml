@@ -484,6 +484,21 @@ extraSecrets:
 # A dictionary of overrides to append at the end of superset_config.py - the name does not matter
 # WARNING: the order is not guaranteed
 configOverrides:
+
+  limits: |
+    ROW_LIMIT = 5000000
+    SQL_MAX_ROW = 5000000
+    SAMPLES_ROW_LIMIT = 100000
+    DISPLAY_MAX_ROW = 5000000
+    VIZ_ROW_LIMIT = 5000000
+    CSV_EXPORT_ROW_LIMIT = 5000000
+
+  timeouts: |
+    SUPERSET_WEBSERVER_TIMEOUT = 600
+    SQLLAB_ASYNC_TIME_LIMIT_SEC = 21600
+    SQLLAB_TIMEOUT = 600
+    SUPERSET_WEBSERVER_KEEPALIVE = 120
+    
   enable_feature_flags: |
     FEATURE_FLAGS = {
       "DASHBOARD_RBAC": True,
@@ -491,6 +506,9 @@ configOverrides:
       "DASHBOARD_CROSS_FILTERS": True,
       "DASHBOARD_NATIVE_FILTERS_SET": True,
       "ENABLE_TEMPLATE_PROCESSING": True,
+      # "GLOBAL_ASYNC_QUERIES": True,
+      # "SQLLAB_BACKEND_PERSISTENCE": True,
+      "ASYNC_CSV_EXPORTS": True,
     }
 
   data_cache_config: |
@@ -505,6 +523,7 @@ configOverrides:
     SQLALCHEMY_DATABASE_URI = 'postgresql://{{ tpl .Values.global.postgresql.superset.name . }}:{{ tpl .Values.global.postgresql.superset.password . }}@{{ tpl .Values.global.postgresql.host . }}:{{ tpl (.Values.global.postgresql.port | toString) . }}/{{ tpl .Values.global.postgresql.superset.name . }}'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SECRET_KEY = 'xCHEuo3xQNLdqgvM7GAR4Gf9kjyQzFzIrGi1maZdb0xibHu47o5hIyAX'
+    ASYNC_QUERY_TOKEN_SECRET = '9aA2hFwD3qM0xNsLb8ePgRzT6mXkYvU5cJhQnB7sSwZpE9rCfLdVgTqHbPyKjXxL'
 
   # map_box_key: |
   #  MAPBOX_API_KEY=''

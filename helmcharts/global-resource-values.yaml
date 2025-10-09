@@ -568,8 +568,8 @@ spark:
 superset:
   resources:
     limits:
-      cpu: 512m
-      memory: 1024Mi
+      cpu: 1
+      memory: 4096Mi
     requests:
       cpu: 250m
       memory: 512Mi
