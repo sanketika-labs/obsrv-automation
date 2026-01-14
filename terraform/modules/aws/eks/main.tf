@@ -1,0 +1,418 @@
+locals {
+  common_tags = {
+    Environment   = "${var.env}"
+    BuildingBlock = "${var.building_block}"
+  }
+  kubeconfig = <<KUBECONFIG
+      apiVersion: v1
+      clusters:
+      - cluster:
+          certificate-authority-data: ${aws_eks_cluster.eks_master.certificate_authority.0.data}
+          server: ${aws_eks_cluster.eks_master.endpoint}
+        name: ${aws_eks_cluster.eks_master.arn}
+      contexts:
+      - context:
+          cluster: ${aws_eks_cluster.eks_master.arn}
+          user: ${aws_eks_cluster.eks_master.arn}
+        name: ${aws_eks_cluster.eks_master.arn}
+      current-context: ${aws_eks_cluster.eks_master.arn}
+      kind: Config
+      preferences: {}
+      users:
+      - name: ${aws_eks_cluster.eks_master.arn}
+        user:
+          exec:
+            apiVersion: client.authentication.k8s.io/v1beta1
+            command: aws
+            args:
+              - --region
+              - "${var.region}"
+              - eks
+              - get-token
+              - --cluster-name
+              - "${var.building_block}-${var.env}-eks"
+    KUBECONFIG
+}
+
+resource "aws_iam_role" "eks_master_role" {
+  name               = "${var.building_block}-${var.env}-${var.eks_master_role}"
+  assume_role_policy = <<POLICY
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+      "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+    ]
+  }
+  POLICY
+  tags = merge(
+    {
+      Name = "${var.building_block}-${var.env}-eks-master-policy"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "eks_nodes_role" {
+  name = "${var.building_block}-${var.env}-${var.eks_nodes_role}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+  tags = merge(
+    {
+      Name = "${var.building_block}-${var.env}-eks-nodes-policy"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role_policy_attachment" "eks_master_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_master_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
+  ])
+  policy_arn = each.value
+  role       = aws_iam_role.eks_nodes_role.name
+}
+
+resource "aws_eks_cluster" "eks_master" {
+  name                      = "${var.building_block}-${var.env}-eks"
+  role_arn                  = aws_iam_role.eks_master_role.arn
+  version                   = var.eks_version
+  enabled_cluster_log_types = ["api"]
+
+  vpc_config {
+    subnet_ids              = var.eks_master_subnet_ids
+    endpoint_private_access = var.eks_endpoint_private_access
+    endpoint_public_access  = !var.eks_endpoint_private_access
+  }
+
+  tags = merge(
+    {
+      Name = "${var.building_block}-${var.env}-eks"
+    },
+    local.common_tags,
+  var.additional_tags)
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_master_policy_attachment,
+    # aws_cloudwatch_log_group.eks_cw_log_group.0
+  ]
+}
+resource "aws_cloudwatch_log_group" "eks_cw_log_group" {
+  count             = var.cluster_logs_enabled ? 1 : 0
+  name              = "/aws/eks/${var.building_block}-${var.env}-eks/cluster"
+  retention_in_days = var.eks_cluster_logs_retention
+}
+
+resource "aws_eks_node_group" "eks_nodes" {
+  cluster_name    = aws_eks_cluster.eks_master.name
+  node_group_name = var.eks_node_group_name
+  node_role_arn   = aws_iam_role.eks_nodes_role.arn
+  subnet_ids      = var.eks_nodes_subnet_ids
+  ami_type        = var.eks_node_group_ami_type
+  instance_types  = var.eks_node_group_instance_type
+  capacity_type   = var.eks_node_group_capacity_type
+  # disk_size       = var.eks_node_disk_size
+
+  tags = merge(
+    {
+      Name = "${var.building_block}-${var.env}-nodegroup-${var.eks_node_group_capacity_type}"
+    },
+    local.common_tags,
+  var.additional_tags)
+
+  scaling_config {
+    desired_size = var.eks_node_group_scaling_config["desired_size"]
+    max_size     = var.eks_node_group_scaling_config["max_size"]
+    min_size     = var.eks_node_group_scaling_config["min_size"]
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_node_policy_attachment
+  ]
+  launch_template {
+    id      = aws_launch_template.eks_launch_template.id
+    version = "$Latest"
+  }
+}
+
+resource "aws_launch_template" "eks_launch_template" {
+  name_prefix = "${var.building_block}-${var.env}-eks-nodes-launch-template"
+  user_data = base64encode(<<-EOT
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+    --==MYBOUNDARY==
+    Content-Type: text/x-shellscript; charset="us-ascii"
+
+    #!/bin/bash
+    KUBELET_CONFIG=/etc/kubernetes/kubelet/kubelet-config.json
+    echo "$(jq ".imageGCHighThresholdPercent=75" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+    echo "$(jq ".imageGCLowThresholdPercent=70" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+    echo "$(jq ".imageMinimumGCAge=\"2m\"" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+    echo "$(jq ".imageMaximumGCAge=\"168h\"" $KUBELET_CONFIG)" > $KUBELET_CONFIG
+
+    --==MYBOUNDARY==--
+  EOT
+  )
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = var.eks_node_disk_size
+      volume_type = "gp3"
+      delete_on_termination = true
+      encrypted = var.volume_encryption
+    }
+  }
+
+  metadata_options {
+    http_tokens               = "required"   # Require IMDSv2
+    http_put_response_hop_limit = 2          # Hop limit as required
+    http_endpoint             = "enabled"    # Ensure endpoint is accessible
+  }
+
+}
+
+resource "aws_eks_addon" "addons" {
+  for_each          = { for addon in var.eks_addons : addon.name => addon }
+  cluster_name      = aws_eks_cluster.eks_master.id
+  addon_name        = each.value.name
+  addon_version     = each.value.version
+
+  # Configure service account for EBS CSI driver
+  service_account_role_arn = each.value.name == "aws-ebs-csi-driver" ? aws_iam_role.ebs_csi_driver_role.arn : null
+}
+
+data "tls_certificate" "cluster_tls_cert" {
+  url = aws_eks_cluster.eks_master.identity.0.oidc.0.issuer
+}
+
+resource "aws_iam_openid_connect_provider" "eks_openid" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = concat([data.tls_certificate.cluster_tls_cert.certificates.0.sha1_fingerprint], var.oidc_thumbprint_list)
+  url             = aws_eks_cluster.eks_master.identity.0.oidc.0.issuer
+}
+
+resource "aws_iam_role" "dataset_api_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.dataset_api_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.dataset_api_namespace}", SA_NAME = "${var.dataset_api_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.dataset_api_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_role" "config_api_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.config_api_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.config_api_namespace}", SA_NAME = "${var.config_api_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.config_api_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+
+
+resource "aws_iam_role" "spark_sa_iam_role" {
+  name = "${var.env}-${var.building_block}-${var.spark_sa_iam_role_name}"
+  assume_role_policy = templatefile("${path.module}/oidc_assume_role_spark.json.tfpl", {
+    OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn,
+    OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url,
+      "https://",
+    ""),
+    NAMESPACE  = "${var.spark_namespace}",
+    SA_NAME    = "${var.spark_namespace}-sa",
+    SA_ROLE    = "${var.building_block}-${var.env}-${var.eks_nodes_role}",
+    ACCOUNT_ID = "${data.aws_caller_identity.current.account_id}"
+  })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.spark_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "flink_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.flink_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.flink_namespace}", SA_NAME = "${var.flink_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.flink_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "druid_raw_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.druid_raw_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.druid_raw_namespace}", SA_NAME = "${var.druid_raw_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.druid_raw_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "secor_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.secor_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.secor_namespace}", SA_NAME = "${var.secor_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.secor_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "s3_exporter_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.s3_exporter_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.s3_exporter_namespace}", SA_NAME = "${var.s3_exporter_namespace}-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.s3_exporter_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "postgresql_backup_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.postgresql_backup_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.postgresql_namespace}", SA_NAME = "${var.postgresql_namespace}-backup-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.postgresql_backup_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "redis_backup_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.redis_backup_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.redis_namespace}", SA_NAME = "${var.redis_namespace}-backup-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.redis_backup_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "velero_backup_sa_iam_role" {
+  name                = "${var.env}-${var.building_block}-${var.velero_backup_sa_iam_role_name}"
+  assume_role_policy  = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", { OIDC_ARN = aws_iam_openid_connect_provider.eks_openid.arn, OIDC_URL = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""), NAMESPACE = "${var.velero_namespace}", SA_NAME = "${var.velero_namespace}-backup-sa" })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.velero_backup_sa_iam_role_name}"
+    },
+    local.common_tags,
+  var.additional_tags)
+}
+
+resource "aws_iam_role" "ebs_csi_driver_role" {
+  name = "${var.env}-${var.building_block}-ebs-csi-driver"
+  assume_role_policy = templatefile("${path.module}/oidc_assume_role_policy.json.tfpl", {
+    OIDC_ARN  = aws_iam_openid_connect_provider.eks_openid.arn,
+    OIDC_URL  = replace(aws_iam_openid_connect_provider.eks_openid.url, "https://", ""),
+    NAMESPACE = "kube-system",
+    SA_NAME   = "ebs-csi-controller-sa"
+  })
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"]
+  depends_on          = [aws_iam_openid_connect_provider.eks_openid]
+  tags = merge(
+    {
+      Name = "${var.env}-${var.building_block}-ebs-csi-driver"
+    },
+    local.common_tags,
+    var.additional_tags
+  )
+}
+
+resource "aws_iam_role_policy" "velero_backup_permissions" {
+  name   = "${var.env}-${var.building_block}-${var.velero_backup_sa_iam_role_name}-permissions"
+  role   = aws_iam_role.velero_backup_sa_iam_role.name
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::*/*"
+        ]
+
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:CreateSnapshot",
+          "ec2:DeleteSnapshot",
+          "ec2:CreateTags",
+          "ec2:DeleteTags",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeSnapshots"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": "iam:PassRole",
+        "Resource": "*"
+      }
+    ]
+  })
+}

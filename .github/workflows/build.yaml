@@ -1,0 +1,26 @@
+name: Deploy workflow for obsrv one click
+
+on:
+  push:
+    tags:
+      - "*/*"
+
+jobs:
+  deployment:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Run terraform script
+        run: |
+          ls
+          cd ./terraform/aws
+          terraform init -backend-config=terraform_backend.conf
+          terraform plan
+          terraform apply -auto-approve

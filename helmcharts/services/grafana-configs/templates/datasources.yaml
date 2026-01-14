@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  additionalDatasources.yaml: |-
+    apiVersion: 1
+    datasources:
+    {{- range .Values.additionalDataSources }}
+    - {{- $ds := deepCopy . }}
+      {{- if eq $ds.name "Prometheus" }}
+        {{- $_ := set $ds "url" $.Values.global.prometheus.url }}
+      {{- end }}
+      {{- if eq $ds.name "Loki" }}
+        {{- $_ := set $ds "url" $.Values.global.loki.url }}
+      {{- end }}
+      {{ toYaml $ds | indent 6 | trim }}
+    {{- end }}
+metadata:
+  name: {{ .Chart.Name }}-datasources
+  namespace: {{ include "base.namespace" . }}
+  labels:
+    app: {{ template "grafana-configs.name" $ }}
+{{ include "grafana-configs.labels" $ | indent 4 }}
+{{- range $key, $value := .Values.datasources.label }}
+{{ $key | indent 4 }}: {{ $value | quote }}
+{{- end }}
+    system.monitoring: "true"

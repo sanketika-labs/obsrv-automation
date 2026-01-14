@@ -1,0 +1,32 @@
+**/target
+*.iml
+.idea
+.classpath
+*.DS_Store
+*.terrahelpbkp
+**/.terraform/*
+automation-scripts/infra-setup/awscliv2.zip
+automation-scripts/infra-setup/aws/dist
+automation-scripts/infra-setup/aws/install
+automation-scripts/infra-setup/aws/README.md
+automation-scripts/infra-setup/aws/THIRD_PARTY_LICENSES
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+!overrides.tfvars
+
+# Ignore everything in the helmcharts/kitchen directory
+helmcharts/kitchen/*
+# Exclude install.sh from being ignored
+!helmcharts/kitchen/install.sh
+node_modules
+package-lock.json
+
+Ignore the global-key-values.yaml file as it is automatically created by Terraform
+terraform/aws/global-values.yaml
+terraform/aws/private_key.pem
+terraform/aws/public_key.pem
+*.tfvars
+*.env
+.env

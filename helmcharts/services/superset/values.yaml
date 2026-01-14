@@ -1,0 +1,682 @@
+namespace: superset
+# global:
+global:
+  postgresql:
+    user: "postgres"
+    password: "postgres"
+    host: "postgresql-hl.postgresql.svc.cluster.local"
+    port: 5432
+  redis_dedup:
+    host: valkey-dedup-headless.redis.svc.cluster.local
+    port: 6379
+
+postgresql:
+  db_name: "superset"
+  db_username: "superset"
+  db_password: "superset123"
+redis:
+  db_index: 3
+
+replicaCount: 1
+oauth_enabled: true
+
+adminUser:
+  username: "admin"
+  firstname: "Superset"
+  lastname: "Admin"
+  email: "admin@superset.com"
+  password: "admin123"
+
+oauth:
+  enabled: true
+  client_id: ""
+  client_secret: ""
+  auth_token: ""
+  email_whitelist_regex: ""
+  whitelist_domain: ""
+  user_registration_role: "Gamma"
+
+runAsUser: 1000
+
+# Install additional packages and do any other bootstrap configuration in this script
+# For production clusters it's recommended to build own image with this step done in CI
+bootstrapScript: |
+  #!/bin/bash
+  #rm -rf /var/lib/apt/lists/* && \
+  if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi
+
+## The name of the secret which we will use to generate a superset_config.py file
+## Note: this secret must have the key superset_config.py in it and can include other files as well
+##
+configFromSecret: '{{ template "superset.fullname" . }}-config'
+
+## The name of the secret which we will use to populate env vars in deployed pods
+## This can be useful for secret keys, etc.
+##
+envFromSecret: '{{ template "superset.fullname" . }}-env'
+## This can be a list of template strings
+envFromSecrets: []
+
+## Extra environment variables that will be passed into pods
+##
+extraEnv: {}
+  # Extend timeout to allow long running queries.
+  # GUNICORN_TIMEOUT: 300
+
+
+   # OAUTH_HOME_DOMAIN: ..
+  # # If a whitelist is not set, any address that can use your OAuth2 endpoint will be able to login.
+  # #   this includes any random Gmail address if your OAuth2 Web App is set to External.
+  # OAUTH_WHITELIST_REGEX: ...
+
+## Extra environment variables to pass as secrets
+##
+extraSecretEnv: {}
+  # MAPBOX_API_KEY: ...
+  # # Google API Keys: https://console.cloud.google.com/apis/credentials
+  # GOOGLE_KEY: ...
+  # GOOGLE_SECRET: ...
+
+extraConfigs:
+  import_datasources.yaml: |
+    databases:
+    - allow_csv_upload: true
+      allow_ctas: true
+      allow_cvas: true
+      database_name: obsrv
+      allow_dml: true
+      sqlalchemy_uri: druid://dataset-api.dataset-api.svc.cluster.local:3000/v2/obsrv/data/sql-query
+      uuid: 04e7a613-525a-4ec7-80b6-e703584cc743
+      version: 1.0.0
+      tables:
+      - table_name: system-events
+        main_dttm_col: __time
+        description: null
+        default_endpoint: null
+        offset: 0
+        cache_timeout: null
+        schema: druid
+        sql: null
+        params: null
+        template_params: null
+        filter_select_enabled: false
+        fetch_values_predicate: null
+        extra: null
+        uuid: 62edf6c5-87c8-4b03-8a0a-f67613d3e24d
+        metrics:
+        - metric_name: total_processing_time
+          verbose_name: Total Processing Time
+          metric_type: double
+          expression: SUM(total_processing_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: latency_time
+          verbose_name: Latency Time
+          metric_type: double
+          expression: SUM(latency_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: processing_time
+          verbose_name: Processing Time
+          metric_type: double
+          expression: SUM(processing_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: extractor_time
+          verbose_name: Extractor Time
+          metric_type: double
+          expression: SUM(extractor_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: validator_time
+          verbose_name: Validator Time
+          metric_type: double
+          expression: SUM(validator_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: dedup_time
+          verbose_name: Deduplication Time
+          metric_type: double
+          expression: SUM(dedup_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: denorm_time
+          verbose_name: Denormalization Time
+          metric_type: double
+          expression: SUM(denorm_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: transformer_time
+          verbose_name: Transformer Time
+          metric_type: double
+          expression: SUM(transformer_time)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: error_count
+          verbose_name: Error Count
+          metric_type: long
+          expression: SUM(error_count)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: count
+          verbose_name: COUNT(*)
+          metric_type: count
+          expression: COUNT(*)
+          description: null
+          d3format: null
+          warning_text: null
+        - metric_name: count
+          verbose_name: COUNT(*)
+          metric_type: count
+          expression: COUNT(*)
+          description: Count
+          d3format: null
+          warning_text: null
+        columns:
+        - column_name: __time
+          verbose_name: Event Time
+          is_dttm: true
+          is_active: true
+          type: LONG
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Event Time
+          python_date_format: null
+          extra: null
+        - column_name: event_type
+          verbose_name: Event Type
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Event Type
+          python_date_format: null
+          extra: null
+        - column_name: ctx_module
+          verbose_name: Context Module
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Context Module
+          python_date_format: null
+          extra: null
+        - column_name: ctx_pdata_id
+          verbose_name: Context Pdata Id
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Context Pdata Id
+          python_date_format: null
+          extra: null
+        - column_name: ctx_pdata_type
+          verbose_name: Context Pdata Type
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Context Pdata Type
+          python_date_format: null
+          extra: null
+        - column_name: ctx_pdata_pid
+          verbose_name: Context Pdata Pid
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Context Pdata Pid
+          python_date_format: null
+          extra: null
+        - column_name: error_pdata_id
+          verbose_name: Error Pdata Id
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Error Pdata Id
+          python_date_format: null
+          extra: null
+        - column_name: error_pdata_status
+          verbose_name: Error Pdata Status
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Error Pdata Status
+          python_date_format: null
+          extra: null
+        - column_name: error_type
+          verbose_name: Error Type
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Error Type
+          python_date_format: null
+          extra: null
+        - column_name: error_code
+          verbose_name: Error Code
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Error Code
+          python_date_format: null
+          extra: null
+        - column_name: error_message
+          verbose_name: Error Message
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Error Message
+          python_date_format: null
+          extra: null
+        - column_name: error_level
+          verbose_name: Error Level
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Error Level
+          python_date_format: null
+          extra: null
+        - column_name: ctx_dataset
+          verbose_name: Context Dataset
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Context Dataset
+          python_date_format: null
+          extra: null
+        - column_name: ctx_dataset_type
+          verbose_name: Context Dataset Type
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Context Dataset Type
+          python_date_format: null
+          extra: null
+        - column_name: extractor_status
+          verbose_name: Extractor Status
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Extractor Status
+          python_date_format: null
+          extra: null
+        - column_name: validator_status
+          verbose_name: Validator Status
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Validator Status
+          python_date_format: null
+          extra: null
+        - column_name: dedup_status
+          verbose_name: Deduplication Status
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Deduplication Status
+          python_date_format: null
+          extra: null
+        - column_name: denorm_status
+          verbose_name: Denormalization Status
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Denormalization Status
+          python_date_format: null
+          extra: null
+        - column_name: transformer_status
+          verbose_name: Transformer Status
+          is_dttm: false
+          is_active: true
+          type: STRING
+          advanced_data_type: null
+          groupby: true
+          filterable: true
+          expression: null
+          description: Transformer Status
+          python_date_format: null
+          extra: null
+        version: 1.0.0
+        database_uuid: 04e7a613-525a-4ec7-80b6-e703584cc743
+    - allow_csv_upload: false
+      allow_ctas: false
+      allow_cvas: false
+      allow_run_async: false
+      allow_dml: false
+      expose_in_sqllab: true
+      database_name: lakehouse
+      sqlalchemy_uri: trino://trino@hudi-trino.trino.svc.cluster.local/lakehouse/hms
+      uuid: a5abc507-1743-41ef-9fc7-256dfde8d497
+      version: 1.0.0
+
+extraSecrets:
+  custom_sso_security_manager.py: |
+    import logging
+    import json
+    from superset.security import SupersetSecurityManager
+    from flask_appbuilder.security.manager import AUTH_OAUTH
+    import redis
+    import os
+
+    def env(key, default=None):
+        return os.getenv(key, default)
+
+    def set_token_for_user(user_id, token, expiration=86400):
+      sso_cache = redis.Redis(
+          host=env("REDIS_HOST"),
+          port=int(env("REDIS_PORT")),
+          password=env("REDIS_PASSWORD"),
+          db=int(env("REDIS_DB", 1)),
+          decode_responses=False,
+      )
+      print(f"✅ Setting token for user {user_id}: {token[:20]}... (expires in {expiration} seconds)")
+      sso_cache.setex(f"sso_user_token:{user_id}", expiration, token)
+
+    class CustomSsoSecurityManager(SupersetSecurityManager):
+      def __init__(self, appbuilder):
+        super(CustomSsoSecurityManager, self).__init__(appbuilder)
+        app = self.appbuilder.get_app
+        app.config.setdefault("AUTH_ROLES_MAPPING", {})
+        app.config.setdefault("AUTH_TYPE", AUTH_OAUTH)
+
+      def oauth_user_info(self, provider, response=None):
+        print("Oauth2 provider:", provider)
+
+        if provider == 'obsrv':
+          token_data = self.appbuilder.sm.oauth_remotes[provider].token
+          access_token = token_data.get("access_token") if token_data else None
+
+          # As example, this line request a GET to base_url + '/' + userDetails with Bearer  Authentication,
+          # and expects that authorization server checks the token, and response with user details
+          me = self.appbuilder.sm.oauth_remotes[provider].get(
+            f'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/userinfo'
+          )
+          me.raise_for_status()
+          data = me.json()
+          logging.info("✅ User info from Keycloak: %s", data)
+
+          if access_token and data["preferred_username"]:
+            set_token_for_user(data["preferred_username"], token_data.get("access_token"), token_data.get("expires_in"))
+
+          return {
+            "name": data["name"],
+            "email": data["email"],
+            "first_name": data["given_name"],
+            "last_name": data["family_name"],
+            "id": data["preferred_username"],
+            "username": data["preferred_username"]
+          }
+
+# A dictionary of overrides to append at the end of superset_config.py - the name does not matter
+# WARNING: the order is not guaranteed
+configOverrides:
+  enable_feature_flags: |
+    FEATURE_FLAGS = {
+      "DASHBOARD_RBAC": True,
+      "DASHBOARD_NATIVE_FILTERS": True,
+      "DASHBOARD_CROSS_FILTERS": True,
+      "DASHBOARD_NATIVE_FILTERS_SET": True,
+      "ENABLE_TEMPLATE_PROCESSING": True,
+    }
+
+  data_cache_config: |
+    DATA_CACHE_CONFIG = {
+      'CACHE_TYPE': 'redis',
+      'CACHE_DEFAULT_TIMEOUT': 600,
+      'CACHE_KEY_PREFIX': 'superset_',
+      'CACHE_REDIS_URL': 'redis://{{ tpl .Values.global.valkey_dedup.host . }}:{{ tpl (.Values.global.valkey_dedup.port | toString) . }}/{{ tpl (toString .Values.redis.db_index) $ }}'
+    }
+
+  sql_alchemy_config: |
+    SQLALCHEMY_DATABASE_URI = 'postgresql://{{ tpl .Values.global.postgresql.superset.name . }}:{{ tpl .Values.global.postgresql.superset.password . }}@{{ tpl .Values.global.postgresql.host . }}:{{ tpl (.Values.global.postgresql.port | toString) . }}/{{ tpl .Values.global.postgresql.superset.name . }}'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SECRET_KEY = 'xCHEuo3xQNLdqgvM7GAR4Gf9kjyQzFzIrGi1maZdb0xibHu47o5hIyAX'
+
+  # map_box_key: |
+  #  MAPBOX_API_KEY=''
+
+  oauth: |
+    from flask_appbuilder.security.manager import AUTH_OAUTH
+
+    AUTH_TYPE = AUTH_OAUTH
+
+    OAUTH_PROVIDERS = [
+      {
+        'name': 'obsrv',
+        'token_key': 'access_token',
+        'icon': 'fa-key',
+        'remote_app': {
+            'client_id': '{{ .Values.global.oauth_configs.superset_client_id }}',
+            'client_secret': '{{ .Values.global.oauth_configs.superset_client_secret }}',
+            'server_metadata_url': 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/.well-known/openid-configuration',
+            'client_kwargs': {
+                'scope': 'openid email profile'
+            },
+            'access_token_method':'POST',    # HTTP Method to call access_token_url
+            'access_token_params':{        # Additional parameters for calls to access_token_url
+                'client_id':'{{ .Values.global.oauth_configs.superset_client_id }}'
+            },
+            'jwks_uri': 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/certs',
+            'api_base_url':'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth',
+            'access_token_url':'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/token',
+            'authorize_url':'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/auth'
+        }
+      }
+    ]
+    AUTH_USER_REGISTRATION = True
+    # AUTH_OAUTH_REDIRECT_URI='http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/oauth-authorized/obsrv'
+    AUTH_OAUTH_REDIRECT_URI='http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/oauth-authorized/obsrv'
+    AUTH_USER_REGISTRATION_ROLE = "Admin"
+    ENABLE_PROXY_FIX = {{ if .Values.global.ssl_enabled }}True{{ else }}False{{ end }}
+
+    from custom_sso_security_manager import CustomSsoSecurityManager
+    CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
+
+configMountPath: "/app/pythonpath"
+extraConfigMountPath: "/app/configs"
+dashboardMountPath: "/app/dashboards"
+
+image: &image
+  registry: docker.io
+  repository: apache/superset
+  tag: 3.0.2
+  pullPolicy: IfNotPresent
+
+<<: *image
+
+imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 8088
+  annotations: {}
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    ## Extend timeout to allow long running queries.
+    # nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  path: /
+  pathType: ImplementationSpecific
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 512m
+    memory: 1024Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+##
+## Superset node configuration
+supersetNode:
+  connections:
+    redis_host: "{{ .Values.global.valkey_dedup.host }}"
+    redis_port: "{{ .Values.global.valkey_dedup.port }}"
+    db_host: "{{ .Values.global.postgresql.host }}"
+    db_port: "{{ .Values.global.postgresql.port }}"
+    db_user: "{{ .Values.global.postgresql.superset.user }}"
+    db_pass: "{{ .Values.global.postgresql.superset.password }}"
+    db_name: "{{ .Values.global.postgresql.superset.name }}"
+  forceReload: false # If true, forces deployment to reload on each upgrade
+  # initContainers:
+  #   - name: wait-for-postgres
+  #     image: busybox:latest
+  #     imagePullPolicy: IfNotPresent
+  #     envFrom:
+  #       - secretRef:
+  #           name: '{{ tpl .Values.envFromSecret . }}'
+  #     command: [ "/bin/sh", "-c", "until nc -zv $DB_HOST $DB_PORT -w1; do echo 'waiting for db'; sleep 1; done" ]
+  ## Annotations to be added to supersetNode deployment
+  deploymentAnnotations: {}
+  ## Annotations to be added to supersetNode pods
+  podAnnotations: {}
+
+##
+## Init job configuration
+init:
+  # Configure resources
+  # Warning: fab command consumes a lot of ram and can
+  # cause the process to be killed due to OOM if it exceeds limit
+  resources: {}
+    # limits:
+    #   cpu:
+    #   memory:
+    # requests:
+    #   cpu:
+    #   memory:
+  command:
+    - "/bin/sh"
+    - "-c"
+    - ". {{ .Values.configMountPath }}/superset_bootstrap.sh; . {{ .Values.configMountPath }}/superset_init.sh"
+  enabled: true
+  createAdmin: true
+  # initContainers:
+  #   - name: wait-for-postgres
+  #     image: busybox:latest
+  #     imagePullPolicy: IfNotPresent
+  #     envFrom:
+  #       - secretRef:
+  #           name: '{{ tpl .Values.envFromSecret . }}'
+  #     command: [ "/bin/sh", "-c", "until nc -zv $DB_HOST $DB_PORT -w1; do echo 'waiting for db'; sleep 1; done" ]
+  initscript: |-
+    #!/bin/sh
+    echo "Upgrading DB schema..."
+    superset db upgrade
+    echo "Initializing roles..."
+    superset init
+    {{ if .Values.init.createAdmin }}
+    echo "Creating admin user..."
+    superset fab create-admin \
+                    --username {{ .Values.adminUser.username }} \
+                    --firstname {{ .Values.adminUser.firstname }} \
+                    --lastname {{ .Values.adminUser.lastname }} \
+                    --email {{ .Values.adminUser.email }} \
+                    --password {{ .Values.adminUser.password }} \
+                    || true
+    {{ end }}
+    if [ -f "{{ .Values.extraConfigMountPath }}/import_datasources.yaml" ]; then
+      echo "Importing database connections.... "
+      superset import_datasources -p {{ .Values.extraConfigMountPath }}/import_datasources.yaml
+    fi
+
+    if [ -f "{{ .Values.dashboardMountPath }}/dashboards.zip" ]; then
+      echo "Importing dashboards.... "
+      superset import-dashboards --path "{{ .Values.dashboardMountPath }}/dashboards.zip"
+    else
+      echo "File /app/dashboards/dashboards.zip not found..."
+    fi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

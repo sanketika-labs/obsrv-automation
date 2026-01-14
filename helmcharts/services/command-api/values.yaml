@@ -1,0 +1,258 @@
+nameOverride: "command-api"
+fullnameOverride: "command-api"
+system_env: "dev"
+replicaCount: 1
+
+global:
+  image:
+    registry: "sanketikahub"
+
+registry: ""
+repository: obsrv-command-service
+tag: "1.0.0-GA"
+digest: ""
+
+imagePullPolicy: IfNotPresent
+imagePullSecrets: []
+
+commonLabels:
+  system.dataset.management: "true"
+
+commonAnnotations: {}
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # runAsNonRoot: true
+  # runAsUser: 1001
+  # fsGroup: 1001
+
+securityContext: {}
+  # readOnlyRootFilesystem: false
+  # capabilities:
+  #   drop:
+  #   - ALL
+
+flinkContainerSecurityContext:
+  {}
+
+flinkPodSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 9999
+  fsGroup: 0
+
+# This block is an interface for k8s service spec.
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - paths:
+      - /
+      # host: chart-example.local
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+livenessProbe: {}
+  # httpGet:
+  #   path: "/healthz"
+  #   port: 8080
+  # initialDelaySeconds: 5
+  # periodSeconds: 5
+
+readinessProbe: {}
+  # httpGet:
+  #   path: "/ready"
+  #   port: 8080
+  # initialDelaySeconds: 5
+  # periodSeconds: 5
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+configmap:
+  enabled: true
+  mountPath: /data/config
+
+namespace: command-api
+serviceAccount:
+  create: true
+  annotations: {}
+
+rbac:
+  enabled: true
+  useClusterRole: true
+  rules:
+    - apiGroups:
+        - ""
+        - "batch"
+        - "extensions"
+        - "apps"
+        - "monitoring.coreos.com"
+      resources:
+        - "*"
+      verbs:
+        - "*"
+
+serviceMonitor:
+  enabled: true
+  selectorLabels:
+    release: monitoring
+  endpoints:
+  - port: "8000" # the name of the port in your service, assuming the primary service port is named 'http' in this example.
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    honorLabels: true
+
+# Example values.yaml structure
+initContainers: {}
+  # - name: init-myservice
+  #   image: busybox:1.28
+  #   command: ['sh', '-c', "until nslookup kubernetes.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+
+sidecars: {}
+  # - name: log-reader # Sidecar container
+  #   image: busybox # Use another busybox image
+  #   command: ["/bin/sh"] # Override the default command
+  #   args: ["-c", "tail -f /var/log/app.log"] # Run a shell script that tails the log file
+serviceConfig:
+  flink:
+    namespace: "{{.Values.global.flink.namespace}}"
+    reinstall_sleep_time: 3
+    jobs:
+      - name: "UnifiedPipelineJob"
+        release_name: unified-pipeline
+        job_manager_url: "unified-pipeline-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
+      - name: "CacheIndexerJob"
+        release_name: cache-indexer
+        job_manager_url: "cache-indexer.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
+
+      - name: "Flink-Hudi-Connector"
+        release_name: lakehouse-connector
+        job_manager_url: "lakehouse-connector-jobmanager.{{.Values.global.flink.namespace}}.svc.cluster.local:8081"
+
+  commands:
+    PUBLISH_DATASET:
+      workflow:
+        - CREATE_KAFKA_TOPIC
+        - MAKE_DATASET_LIVE
+        - SUBMIT_INGESTION_TASKS
+        - START_PIPELINE_JOBS
+        - DEPLOY_CONNECTORS
+        - CREATE_AUDIT_EVENT
+    RESTART_PIPELINE:
+      workflow:
+        - START_PIPELINE_JOBS
+    RESTART_CONNECTORS:
+      workflow:
+        - DEPLOY_CONNECTORS
+
+  postgres:
+    db_host: "{{ .Values.global.postgresql.host }}"
+    db_port: "{{ .Values.global.postgresql.port }}"
+    db_user: "{{ .Values.postgresqlUser | default .Values.global.postgresql.obsrv.user }}"
+    db_password: "{{ .Values.postgresqlPassword | default .Values.global.postgresql.obsrv.password }}"
+    database: "{{ .Values.postgresqlDatabase | default .Values.global.postgresql.obsrv.name }}"
+
+  druid:
+    router_host: "{{ .Values.global.druid.host }}"
+    router_port: "{{ .Values.global.druid.port }}"
+    username: "{{ .Values.global.druid.username }}"
+    password: "{{ .Values.global.druid.password }}"
+    supervisor_endpoint: "{{ .Values.global.druid.supervisorEndpoint }}"
+    ingestion_endpoint: "{{ .Values.global.druid.ingestionEndpoint }}"
+
+  kafka:
+    brokers: "{{ .Values.global.kafka40.host }}:{{ .Values.global.kafka40.port }}"
+    telemetry:
+      topic: "system.telemetry.events"
+    replication_factor: 1
+    no_of_partitions: 1
+
+  helm_charts_base_dir: /app/helm-charts
+
+  connector_job:
+    jdbc:
+      - release_name: jdbc-connector
+        jar: https://obsrv-connectors.s3.us-east-2.amazonaws.com/jdbc/jdbc-connector-1.0-jar-with-dependencies.jar
+        class: org.sunbird.obsrv.job.JDBCConnectorJob
+        schedule: "0 * * * *" # Every hour
+        args:
+          - "/opt/bitnami/spark/conf/jdbc-connector.conf"
+    object:
+      - release_name: object-discovery
+        jar: https://obsrv-connectors.s3.us-east-2.amazonaws.com/object-store/object-discovery-1.0.0.jar
+        class: in.sanketika.obsrv.job.ObjectDiscoveryJob
+        schedule: "0 1 * * *" # Daily Midnight 1AM
+        args:
+          - /opt/bitnami/spark/conf/object-discovery.conf
+      - release_name: object-processor
+        jar: https://obsrv-connectors.s3.us-east-2.amazonaws.com/object-store/object-processor-1.0.0.jar
+        class: in.sanketika.obsrv.job.ObjectProcessor
+        schedule: "30 * * * *" # Every hour at 30 minutes
+        args:
+          - /opt/bitnami/spark/conf/object-processor.conf
+
+  masterdata_job:
+    - release_name: masterdata-indexer
+      jar: https://obsrv-connectors.s3.us-east-2.amazonaws.com/masterdata-indexer/data-products-1.0.0.jar
+      class: org.sunbird.obsrv.dataproducts.MasterDataProcessorIndexer
+      schedule: "0 0 * * *" # Daily Midnight 12AM
+      args:
+        - /opt/bitnami/spark/conf/masterdata-indexer.conf
+
+  backups:
+    cloud_provider: "{{ .Values.global.cloud_storage_provider }}"
+    bucket_name: "{{ .Values.global.cloud_storage_bucket }}"
+
+  prometheus:
+    host: "{{ .Values.global.prometheus.url }}"
+    backup_prefix: "/prometheus_backups"
+    pod: "prometheus-kube-prometheus-stack-prometheus-0"
+    namespace: "{{ .Values.global.namespaces.monitoring_namespace }}"
+    endpoint: "/api/v1/admin/tsdb/snapshot"
+
+  connector_registry:
+    download_path: /tmp/connector-registry
+    metadata_file_name: "metadata.json"
+    ui_spec_file: "ui-config.json"
+
+  connector_jobs:
+    spark:
+      namespace: "{{ .Values.global.namespaces.connector_namespaces.spark }}"
+      base_helm_chart: spark-connector-cron
+    flink:
+      namespace: "{{ .Values.global.namespaces.connector_namespaces.flink }}"
+      base_helm_chart: flink-connector
