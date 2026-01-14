@@ -1,0 +1,107 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: "us-east-1"
+    RUN_SONARSCAN: "false"
+    RUN_UNITTESTS: "true"
+    RUN_CHECKMARX: "true"
+    RUN_BLACKDUCK: "true"
+    RUN_TLCLISCAN: "true"
+    CX_TEAM: "Acc-IPReady"
+  secrets-manager:
+    CHECKMARX_SERVER: "lms-scans-secrets:CHECKMARX_SERVER"
+    CHECKMARX_USER: "lms-scans-secrets:CHECKMARX_USER"
+    CHECKMARX_PASSWORD: "lms-scans-secrets:CHECKMARX_PASSWORD"
+    CHECKMARX_CLIENT_ID: "lms-scans-secrets:CHECKMARX_CLIENT_ID"
+    CHECKMARX_CLIENT_SECRET: "lms-scans-secrets:CHECKMARX_CLIENT_SECRET"
+    SONAR_HOST_URL: "lms-scans-secrets:SONAR_HOST_URL"
+    SONAR_TOKEN: "lms-scans-secrets:SONAR_TOKEN"
+    BLACKDUCK_URL: "lms-scans-secrets:BLACKDUCK_URL"
+    BLACKDUCK_TOKEN: "lms-scans-secrets:BLACKDUCK_TOKEN"
+    APP_ID: "lms-scans-secrets:APP_ID"
+    INSTALLATION_ID: "lms-scans-secrets:INSTALLATION_ID"
+    PRIVATE_KEY_BASE64: "lms-scans-secrets:PRIVATE_KEY_BASE64"
+    TWISTCLI_ACCESS_KEY_ID: "lms-scans-secrets:TWISTCLI_ACCESS_KEY_ID"
+    TWISTCLI_ACCESS_SECRET: "lms-scans-secrets:TWISTCLI_ACCESS_SECRET"
+    TWISTCLI_URL_AUTH: "lms-scans-secrets:TWISTCLI_URL_AUTH"
+    PRISMA_CONSOLE: "lms-scans-secrets:PRISMA_CONSOLE"
+    TWISTCLI_PATH_LIN_X86: "lms-scans-secrets:TWISTCLI_PATH_LIN_X86"
+    TWISTCLI_PATH_LIN_ARM: "lms-scans-secrets:TWISTCLI_PATH_LIN_ARM"
+    TWISTCLI_PATH_WIN: "lms-scans-secrets:TWISTCLI_PATH_WIN"
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+    commands:
+      - FullRepository_name=$(echo $CODEBUILD_SOURCE_REPO_URL | sed 's|https://github.com/||' | sed 's|.git$||')
+      - export FullRepository_name
+      - REPO_NAME=$(basename "$FullRepository_name")
+      - export REPO_NAME
+      - export SONAR_PROJECT="$REPO_NAME"
+      - |
+        bash -c '
+        PRIVATE_KEY=$(echo "$PRIVATE_KEY_BASE64" | base64 -d)
+        HEADER=$(echo -n "{\"alg\":\"RS256\",\"typ\":\"JWT\"}" | base64 | tr -d "\n")
+        PAYLOAD=$(echo -n "{\"iat\":$(date +%s),\"exp\":$(($(date +%s)+600)),\"iss\":\"$APP_ID\"}" | base64 | tr -d "\n")
+        SIGNATURE=$(echo -n "$HEADER.$PAYLOAD" | openssl dgst -sha256 -sign <(echo "$PRIVATE_KEY") | base64 | tr -d "\n")
+        JWT="$HEADER.$PAYLOAD.$SIGNATURE"
+        ACCESS_TOKEN=$(curl -s -X POST -H "Authorization: Bearer $JWT" -H "Accept: application/vnd.github+json" "https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens" | jq -r ".token")
+        if [[ -z "$ACCESS_TOKEN" ]] || [[ "$ACCESS_TOKEN" == "null" ]]; then echo "Error: Failed to generate access token."; exit 1; fi
+        echo "Access token generated successfully"
+        git config --global user.email "noreply@github.com"
+        git config --global user.name "flowsource-integration"
+        echo "Cloning centralized utility repo..."
+        git clone https://x-access-token:${ACCESS_TOKEN}@github.com/Cognizant-SPE/lms-cicd-scripts.git /tmp/lms-cicd-scripts
+        '
+      - |
+        if [ "$RUN_CHECKMARX" = "true" ]
+        then
+          bash /tmp/lms-cicd-scripts/utility/script/checkmarx-scan.sh
+        else
+          echo "...........* SKIPPING CHECKMARX SCAN *............"
+        fi
+  pre_build:
+    commands:
+      - cd exporters/kafka-message-exporter && npm install
+      - cd ../
+      - echo "No gradle build. Skipping unit tests."
+      - PR_NUMBER=$(echo $CODEBUILD_SOURCE_VERSION | sed 's/pr\///')
+      - |
+        echo "...........* RUNNING SONAR SCAN *.........."
+        if [ "$RUN_SONARSCAN" = "true" ]
+        then
+          bash /tmp/lms-cicd-scripts/utility/script/sonar_scan_result.sh
+          echo "...........* SONAR SCAN COMPLETED SUCCESSFULLY *.........."
+        else
+          echo "...........* SKIPPING SONAR SCAN *.........."
+        fi
+  build:
+    commands:
+      - |
+        if [ "$RUN_BLACKDUCK" = "true" ]
+        then
+          RELEASE_NAME="PR"
+          export RELEASE_NAME
+          bash /tmp/lms-cicd-scripts/utility/script/blackduck-scan.sh
+        else
+          echo "...........* SKIPPING BLACKDUCK SCAN *..........."
+        fi
+      # - IMAGE_TAG=$PR_NUMBER
+      # - export IMAGE_TAG
+      # - echo "Building the Docker image...$REPO_NAME:$IMAGE_TAG"
+      # - docker build -t $REPO_NAME:$IMAGE_TAG .
+      # - |
+      #   echo "...........* TWISTCLI  SCAN BLOCK  *.........."
+      #   if [ "$RUN_TLCLISCAN" = "true" ]
+      #   then
+      #     bash /tmp/lms-cicd-scripts/utility/script/twistcli-scan.sh
+      #   else
+      #     echo "...........* SKIPPING TWISTCLI SCAN *.........."
+      #   fi
+  post_build:
+    commands:
+
+      - bash /tmp/lms-cicd-scripts/utility/script/pr-scans-results-comment.sh
+
+
