@@ -32,7 +32,7 @@ env:
 phases:
   install:
     runtime-versions:
-      java: corretto21
+      java: corretto11
     commands:
       - FullRepository_name=$(echo $CODEBUILD_SOURCE_REPO_URL | sed 's|https://github.com/||' | sed 's|.git$||')
       - export FullRepository_name
@@ -103,5 +103,6 @@ phases:
     commands:
 
       - bash /tmp/lms-cicd-scripts/utility/script/pr-scans-results-comment.sh
+
 
 
