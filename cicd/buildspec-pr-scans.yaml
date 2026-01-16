@@ -34,6 +34,8 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
+      - cd exporters/kafka-message-exporter && npm install
+      - cd../
       - FullRepository_name=$(echo $CODEBUILD_SOURCE_REPO_URL | sed 's|https://github.com/||' | sed 's|.git$||')
       - export FullRepository_name
       - REPO_NAME=$(basename "$FullRepository_name")
@@ -63,7 +65,6 @@ phases:
         fi
   pre_build:
     commands:
-      - cd exporters/kafka-message-exporter && npm install
       - echo "No gradle build. Skipping unit tests."
       - PR_NUMBER=$(echo $CODEBUILD_SOURCE_VERSION | sed 's/pr\///')
       - |
@@ -102,6 +103,7 @@ phases:
     commands:
 
       - bash /tmp/lms-cicd-scripts/utility/script/pr-scans-results-comment.sh
+
 
 
 
