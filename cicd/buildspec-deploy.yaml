@@ -30,7 +30,13 @@ phases:
     commands:
       - cd helmcharts/kitchen
       - chmod +x install.sh
-      - aws eks update-kubeconfig --region us-east-1 --name sb-dev-cluster
+      - echo "Checking AWS identity..."
+      - aws sts get-caller-identity
+      - echo "Listing EKS clusters..."
+      - aws eks list-clusters --region $AWS_DEFAULT_REGION
+      - echo "Describing cluster..."
+      - aws eks describe-cluster --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME
+      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME
       - kubectl get nodes
 
   build:
@@ -43,3 +49,4 @@ phases:
     commands:
 
       - echo "Deployment completed successfully."
+
