@@ -1,5 +1,5 @@
 global:
-  ssl_enabled: &ssl_enabled true
+  ssl_enabled: &ssl_enabled false
   cloud_storage_provider: &cloud_storage_provider "aws"
   cloud_store_provider: &cloud_store_provider "s3"
   cloud_storage_region: &cloud_storage_region "<fill-value>" # Update the region to deploy obsrv instance
@@ -148,7 +148,7 @@ kong:
   proxy:
     annotations:
       <<: *kong_annotations
-    type: LoadBalancer
+    type: NodePort
 
 flink-service-account: &flink-service-account
   serviceAccount:
