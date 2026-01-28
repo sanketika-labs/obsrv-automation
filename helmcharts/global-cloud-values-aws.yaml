@@ -2,23 +2,23 @@ global:
   ssl_enabled: &ssl_enabled false
   cloud_storage_provider: &cloud_storage_provider "aws"
   cloud_store_provider: &cloud_store_provider "s3"
-  cloud_storage_region: &cloud_storage_region "<fill-value>" # Update the region to deploy obsrv instance
+  cloud_storage_region: &cloud_storage_region "us-east-1" # Update the region to deploy obsrv instance
 
-  dataset_api_container: "<fill-value>"  # Update the dataset APIs bucket name
-  config_api_container: "<fill-value>"   # Update the config API's bucket name only when deploying the config-api
-  postgresql_backup_cloud_bucket: &backups_bucket "<fill-value>" # Update with the backup bucket name
-  velero_backup_cloud_bucket: &velero_backup_cloud_bucket "<fill-value>" # Update with velero backup  bucket name
-  cloud_storage_bucket: &cloud_storage_bucket "<fill-value>" # Update with the name of cloud storage bucket
-  hudi_metadata_bucket: &hudi_metadata_bucket "s3a://<fill-value>/hudi" # Update with hudi bucket name
+  dataset_api_container: "sb-dev-private"  # Update the dataset APIs bucket name
+  config_api_container: "sb-dev-private"   # Update the config API's bucket name only when deploying the config-api
+  postgresql_backup_cloud_bucket: &backups_bucket "sb-dev-private" # Update with the backup bucket name
+  velero_backup_cloud_bucket: &velero_backup_cloud_bucket "sb-dev-private" # Update with velero backup  bucket name
+  cloud_storage_bucket: &cloud_storage_bucket "sb-dev-private" # Update with the name of cloud storage bucket
+  hudi_metadata_bucket: &hudi_metadata_bucket "s3a://sb-dev-private/hudi" # Update with hudi bucket name
 
   # Update the configuration by replacing 'name' with the access key, 'key' with the secret key, and 'region-name' with the specific region for access.
   cloud_storage_config: |+
-    '{"identity":"","credential":"","region":"region-name"}'
+    '{"identity":"","credential":"","region":"us-east-1"}'
 
   spark_cloud_bucket: ""
   storage_class_name: &storage_class_name "gp3"
-  spark_service_account_arn: &spark_service_account_arn "<fill-value>" # Update with the ARN of the IAM role for this service account
-  checkpoint_bucket: &checkpoint_bucket "s3://<fill-value>" # Update with checkpoint bucket name
+  spark_service_account_arn: &spark_service_account_arn "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
+  checkpoint_bucket: &checkpoint_bucket "s3://sb-dev-private" # Update with checkpoint bucket name
   deep_store_type: &deep_store_type "s3"
   s3_access_key: &s3-access-key "<fill-value>" # Update with the AWS access key
   s3_secret_key: &s3-secret-access-key "<fill-value>" # Update with the AWS secret key
@@ -32,23 +32,23 @@ global:
 service_accounts:
   enabled: &create_sa true
   secor: &secor_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>"  # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role"  # Update with the ARN of the IAM role for this service account
   dataset_api: &dataset_api_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
   config_api: &config_api_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account only when deploying the config-api
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account only when deploying the config-api
   druid_raw: &druid_raw_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
   flink: &flink_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
   postgresql_backup: &postgresql_backup_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
   s3_exporter: &s3_exporter_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
   spark: &spark_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
   velero: &velero_sa_annotation
-    eks.amazonaws.com/role-arn: "<fill-value>" # Update with the ARN of the IAM role for this service account
+    eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/sunbird_bucket_role" # Update with the ARN of the IAM role for this service account
 
 s3-exporter-service-account: &s3-exporter-service-account
   s3_region: *cloud_storage_region
