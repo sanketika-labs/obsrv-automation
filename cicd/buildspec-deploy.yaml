@@ -30,7 +30,7 @@ phases:
     commands:
       - cd helmcharts/kitchen
       - chmod +x install.sh
-      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME
+      - aws eks update-kubeconfig --region us-east-1 --name sb-dev-cluster
       - kubectl get nodes
 
   build:
@@ -41,4 +41,5 @@ phases:
 
   post_build:
     commands:
+
       - echo "Deployment completed successfully."
