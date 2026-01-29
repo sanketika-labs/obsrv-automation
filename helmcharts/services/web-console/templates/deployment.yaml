@@ -62,11 +62,13 @@ spec:
           - configMapRef:
               name: {{ include "common.names.fullname" . }}-env
           env:
+          {{- if .Values.hooks.grafanaHook.enabled }}
           - name: GF_BEARER_TOKEN
             valueFrom:
               secretKeyRef:
                 name: {{ include "common.names.fullname" . }}-grafana-secret
                 key: grafana_token
+          {{- end }}
           - name: USER_TOKEN_PRIVATE_KEY
             valueFrom:
               secretKeyRef:
