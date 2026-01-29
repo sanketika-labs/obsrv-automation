@@ -76,6 +76,7 @@ phases:
     commands:
       - export cloud_env=aws
       - time ./install.sh core-setup
+      - time ./install.sh all
 
   post_build:
     commands:
