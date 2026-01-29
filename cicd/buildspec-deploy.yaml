@@ -40,9 +40,9 @@ phases:
       - echo "Checking AWS identity before assume-role (pipeline account)..."
       - aws sts get-caller-identity
 
-      - echo "Reading target account from pipeline parameter $TF_VAR_aws_account_id"
-      - TARGET_PARAM_VALUE=$(aws ssm get-parameter --name "$TF_VAR_aws_account_id" --with-decryption --query 'Parameter.Value' --output text)
-      - export TARGET_ACCOUNT_ID="$TARGET_PARAM_VALUE"
+      - echo "Using target account from pipeline parameter"
+      - export TARGET_ACCOUNT_ID="$TF_VAR_aws_account_id"
+
 
       # Build role ARN from account id if not provided via env
       - |
