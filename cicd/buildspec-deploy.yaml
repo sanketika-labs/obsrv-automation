@@ -33,7 +33,7 @@ phases:
 
   pre_build:
     commands:
-      - set -euo pipefail
+      - set -eu
       - cd helmcharts/kitchen
       - chmod +x install.sh
 
