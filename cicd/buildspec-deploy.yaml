@@ -47,7 +47,7 @@ phases:
       # Build role ARN from account id if not provided via env
       - |
         if [ -z "${ASSUME_ROLE_ARN:-}" ]; then
-          TARGET_ROLE_NAME="${TARGET_ROLE_NAME:-CodeBuildCrossAccountEKSRole}"
+          TARGET_ROLE_NAME="${TARGET_ROLE_NAME:lms-cross-account-codebuild-role}"
           export ASSUME_ROLE_ARN="arn:aws:iam::${TARGET_ACCOUNT_ID}:role/${TARGET_ROLE_NAME}"
         fi
       - echo "Assuming into target role $ASSUME_ROLE_ARN"
