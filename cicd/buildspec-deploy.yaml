@@ -74,8 +74,8 @@ phases:
   build:
     on-failure: ABORT
     commands:
-      # - export cloud_env=aws
-      # - time ./install.sh core-setup
+      - export cloud_env=aws
+      - time ./install.sh core-setup
 
   post_build:
     commands:
