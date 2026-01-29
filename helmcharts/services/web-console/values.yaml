@@ -27,6 +27,10 @@ commonLabels:
 
 commonAnnotations: {}
 
+hooks:
+  grafanaHook:
+    enabled: false
+
 podAnnotations: {}
 
 podSecurityContext:
