@@ -62,7 +62,7 @@ kafka40)
     ;;
 migrations)
     cp -rf ../obsrv migrations
-    cp -rf ../services/{postgresql-migration,kubernetes-reflector,grafana-configs,letsencrypt-ssl} migrations/charts/
+    cp -rf ../services/{postgresql-migration,kubernetes-reflector,letsencrypt-ssl} migrations/charts/
 
     helm $cmd migrations ./migrations -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name
     rm -rf migrations
