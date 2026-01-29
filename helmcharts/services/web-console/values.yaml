@@ -201,7 +201,7 @@ env:
   AUTH_OIDC_CLIENT_ID: "oidctestclient"
   AUTH_OIDC_CLIENT_SECRET: "CsfLrFQwdRjZXhKr0t806BGVTWnN7M4k"
   AUTH_TOKEN: "YWRtaW46cHJvbS1vcGVyYXRvcg=="
-  AUTHENTICATION_TYPE: "keycloak"
+  AUTHENTICATION_TYPE: "basic"
   KEYCLOAK_REALM: "obsrv"
   KEYCLOAK_CLIENT_ID: "{{ .Values.global.oauth_configs.web_console_client_id }}"
   KEYCLOAK_PUBLIC_CLIENT: "true"
