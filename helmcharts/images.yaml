@@ -49,7 +49,7 @@ images: &images
   unified-pipeline: &unified-pipeline
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_core
-    tag: "R1_UNIFIED.240126-21"
+    tag: "R1_UNIFIED.240126-2"
     digest: ""
 
   cache-indexer: &cache-indexer
