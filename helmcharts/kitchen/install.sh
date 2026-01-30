@@ -146,7 +146,7 @@ core-setup)
 all)
     bash $0 migrations ${@: 2}
     # bash $0 monitoring ${@: 2}
-    bash $0 oauth ${@: 2}
+    # bash $0 oauth ${@: 2}
     bash $0 coreinfra ${@: 2}
     bash $0 obsrvapis ${@: 2}
     # We are not installing these for now.
