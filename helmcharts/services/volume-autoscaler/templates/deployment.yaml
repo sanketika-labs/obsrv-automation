@@ -389,7 +389,7 @@ spec:
                 - key: {{ if .Values.usingNewRecommendedLabels }}app.kubernetes.io/name{{ else }}app{{ end }}
                   operator: In
                   values:
-                  - {{ template "name" . }}
+                  - {{ include "volume-autoscaler.name" . }}
           - weight: 100
             podAffinityTerm:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
@@ -398,7 +398,7 @@ spec:
                 - key: {{ if .Values.usingNewRecommendedLabels }}app.kubernetes.io/name{{ else }}app{{ end }}
                   operator: In
                   values:
-                  - {{ template "name" . }}
+                  - {{ include "volume-autoscaler.name" . }}
 {{- /*
 SORRY for this mess, this is needed because of the above
 */}}
