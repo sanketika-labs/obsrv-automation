@@ -117,7 +117,7 @@ obsrvtools)
     ;;
 additional)
     cp -rf ../obsrv additional
-    cp -rf ../services/{postgresql-backup,kong-ingress-routes,volume-autoscaler,masterdata-indexer-cron} additional/charts/
+    cp -rf ../services/{postgresql-backup,kong-ingress-routes,masterdata-indexer-cron} additional/charts/
     # copy cloud specific helm charts
     case $cloud_env in
     "aws")
