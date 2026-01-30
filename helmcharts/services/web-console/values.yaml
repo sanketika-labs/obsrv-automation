@@ -5,7 +5,7 @@ replicaCount: 1
 
 global:
   image:
-    registry: "sanketikahub"
+    registry: ""
 
 registry: ""
 repository: "obsrv-web-console"
