@@ -20,7 +20,7 @@ imagePullSecrets: &imagePullSecrets
 images: &images
   ## Obsrv Images
   command-api: &command-api # registry: ""
-    regirstry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
     tag: "R2_CMD.290126-10"
     digest: ""
