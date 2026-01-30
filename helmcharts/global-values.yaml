@@ -602,6 +602,7 @@ kong-ingress-routes:
     superset:
       namespace: *superset-namespace
     grafana:
+      enabled: false
       namespace: *monitoring-namespace
     keycloak:
       namespace: *keycloak_namespace
