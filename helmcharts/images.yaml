@@ -20,7 +20,8 @@ imagePullSecrets: &imagePullSecrets
 images: &images
   ## Obsrv Images
   command-api: &command-api # registry: ""
-    repository: 061051225269.dkr.ecr.us-east-1.amazonaws.com/lms_sb_obsrv_api_service
+    regirstry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "lms_sb_obsrv_api_service"
     tag: "R2_CMD.290126-10"
     digest: ""
 
@@ -31,7 +32,8 @@ images: &images
   #   digest: ""
 
   dataset-api: &dataset-api # registry: ""
-    repository: 061051225269.dkr.ecr.us-east-1.amazonaws.com/lms_sb_obsrv_api_service
+    registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "lms_sb_obsrv_api_service"
     tag: "R1_API.290126-10"
     digest: ""
 
@@ -41,7 +43,8 @@ images: &images
     digest: ""
 
   web-console: &web-console # registry: ""
-    repository: "061051225269.dkr.ecr.us-east-1.amazonaws.com/lms_sb_obsrv_web_console"
+    registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "lms_sb_obsrv_web_console"
     tag: "R1_WEB_CONSOLE.240126-2"
     digest: ""
 

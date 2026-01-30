@@ -1,5 +1,5 @@
 {{- define "base.image" }}
-{{- $registry := default .Values.global.image.registry .Values.registry }}
+{{- $registry := default .Values.registry }}
 {{- $image := printf "%s/%s" $registry .Values.repository}}
 {{- if .Values.digest }}
 {{- printf "%s@%s" $image .Values.digest }}
