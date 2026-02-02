@@ -55,6 +55,19 @@ service:
       port: 3000
       targetPort: 3000
 
+loadBalancerService:
+  enabled: true
+  type: loadBalancerService
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+  externalTrafficPolicy: Local
+  protocol: TCP
+  ports:
+    - name: http
+      port: 3000
+      targetport: 3000
+
 ingress:
   enabled: false
   annotations: {}
