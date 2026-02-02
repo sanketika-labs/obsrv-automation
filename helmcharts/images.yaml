@@ -74,7 +74,8 @@ images: &images
     digest: ""
 
   postgresql-backup: &postgresql-backup # registry: ""
-    repository: 061051225269.dkr.ecr.us-east-1.amazonaws.com/lms_sb_obsrv_automation
+    registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
+    repository: lms_sb_obsrv_automation
     tag: "R3_PGBACKUP.290126-1"
     digest: ""
 
