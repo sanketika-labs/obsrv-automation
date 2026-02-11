@@ -22,7 +22,7 @@ images: &images
   command-api: &command-api # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
-    tag: "R2_CMD.290126-10"
+    tag: "R2_CMD.110226-12"
     digest: ""
 
   # dataset-api: #open source
@@ -34,7 +34,7 @@ images: &images
   dataset-api: &dataset-api # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
-    tag: "R1_API.290126-10"
+    tag: "R1_API.110226-12"
     digest: ""
 
   config-api: &config-api # registry: ""
@@ -45,20 +45,20 @@ images: &images
   web-console: &web-console # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_web_console"
-    tag: "R1_WEB_CONSOLE.240126-2"
+    tag: "R1_WEB_CONSOLE.110226-4"
     digest: ""
 
   ## PIPELINE ENTERPRISE
   unified-pipeline: &unified-pipeline
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_core
-    tag: "R1_UNIFIED.240126-2"
+    tag: "R1_UNIFIED.110226-4"
     digest: ""
 
   cache-indexer: &cache-indexer
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_core
-    tag: "R2_CACHE.240126-2"
+    tag: "R2_CACHE.110226-4"
     digest: ""
 
   ## PIPELINE ENTERPRISE - INDIVIDUAL COMPONENTS
@@ -76,7 +76,7 @@ images: &images
   postgresql-backup: &postgresql-backup # registry: ""
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_automation
-    tag: "R3_PGBACKUP.290126-1"
+    tag: "R3_PGBACKUP.100226-3"
     digest: ""
 
   postgresql: &postgresql
@@ -133,7 +133,7 @@ images: &images
 
   system-rules-ingestor: &system-rules-ingestor # registry: ""
     repository: "061051225269.dkr.ecr.us-east-1.amazonaws.com/lms_sb_obsrv_api_service"
-    tag: "R3_SRI.290126-10"
+    tag: "R3_SRI.110226-12"
     digest: ""
 
   loki: &loki
@@ -241,7 +241,7 @@ images: &images
   superset: &superset
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: "lms_sb_obsrv_automation"
-    tag: "R4_SUPERSET.290126-1"
+    tag: "R4_SUPERSET.100226-3"
     digest: ""
 
   secor: &secor
@@ -335,7 +335,7 @@ images: &images
   druid-raw-cluster: &druid-raw-cluster
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_automation
-    tag: "R1_DRUID.290126-1"
+    tag: "R1_DRUID.100226-3"
     digest: ""
 
   druid_exporter: &druid_exporter
@@ -394,7 +394,7 @@ images: &images
   sanketikahub-kubectl: &sanketikahub-kubectl
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_automation
-    tag: "R2_KUBECTL.290126-1"
+    tag: "R2_KUBECTL.100226-3"
     digest: ""
 
 # Public charts like bitnami etc
