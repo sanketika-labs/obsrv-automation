@@ -178,7 +178,7 @@ env:
   postgres_host: "{{ .Values.global.postgresql.host }}"
   postgres_port: "{{ .Values.global.postgresql.port }}"
   postgres_username: "{{ .Values.postgresqlUser | default .Values.global.postgresql.username }}"
-  postgres_password: "{{ .Values.postgresqlPassword | default .Values.global.postgresql.password }}"
+  postgres_password: "{{ .Values.postgresqlPassword | default .Values.global.postgresql.password | b64enc }}"
   postgres_database: obsrv
   denorm_redis_host: "{{ .Values.global.valkey_denorm.host }}"
   denorm_redis_port: "{{ .Values.global.valkey_denorm.port }}"
