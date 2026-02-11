@@ -43,7 +43,7 @@ prerequisites)
     ;;
 coredb)
     cp -rf ../obsrv coredb
-    cp -rf ../services/{postgresql,kong,druid-operator,valkey-dedup,valkey-denorm} coredb/charts/
+    cp -rf ../services/{postgresql,druid-operator,valkey-dedup,valkey-denorm} coredb/charts/
 
     ssl_enabled=$(cat $cloud_file_name | grep 'ssl_enabled:' | awk '{ print $3}')
     if [ "$ssl_enabled" == "true" ]; then
@@ -117,7 +117,7 @@ obsrvtools)
     ;;
 additional)
     cp -rf ../obsrv additional
-    cp -rf ../services/{postgresql-backup,kong-ingress-routes,masterdata-indexer-cron} additional/charts/
+    cp -rf ../services/{postgresql-backup,masterdata-indexer-cron} additional/charts/
     # copy cloud specific helm charts
     case $cloud_env in
     "aws")
