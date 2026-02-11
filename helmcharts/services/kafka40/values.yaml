@@ -134,7 +134,8 @@ existingKraftSecret: ""
 config: {}
 ## @param overrideConfiguration Kafka common configuration override. Values defined here takes precedence over the ones defined at `config`
 ##
-overrideConfiguration: {}
+overrideConfiguration: 
+  log.retention.hours: 1440
 ## @param existingConfigmap Name of an existing ConfigMap with the Kafka configuration
 ##
 existingConfigmap: ""
