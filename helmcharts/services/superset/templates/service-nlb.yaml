@@ -1,0 +1,29 @@
+{{- if .Values.loadBalancerService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "superset.fullname" . }}-nlb
+  namespace: {{ .Values.namespace }}
+  labels: 
+    app.kubernetes.io/name: {{ include "superset.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io//version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- if .Values.loadBalancerService.annotations }}
+  annotations:
+    {{- toYaml .Values.loadBalancerService.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.loadBalancerService.type }}
+  externalTrafficPolicy: {{ .Values.loadBalancerService.externalTrafficPolicy }}
+  allocateLoadBalancerNodePorts: true
+  ports:
+  {{- range .Values.loadBalancerService.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "superset.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
