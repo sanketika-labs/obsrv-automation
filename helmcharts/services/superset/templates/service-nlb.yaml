@@ -24,6 +24,6 @@ spec:
       targetPort: {{ .targetPort }}
   {{- end }}
   selector:
-    app.kubernetes.io/name: {{ include "superset.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: {{ include "superset.name" . }}
+    release: {{ .Release.Name }}
 {{- end }}
