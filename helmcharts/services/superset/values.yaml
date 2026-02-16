@@ -572,12 +572,16 @@ loadBalancerService:
   enabled: true
   type: LoadBalancer
   externalTrafficPolicy: Local
+  certificateArn: "arn:aws:acm:us-east-1:522814700227:certificate/8d0eab0e-804d-4941-b61d-11559789dd73"
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
   ports:
     - name: http
       port: 80
+      targetPort: 8088
+    - name: https
+      port: 443
       targetPort: 8088
 
 ingress:

@@ -9,10 +9,14 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-  {{- if .Values.loadBalancerService.annotations }}
   annotations:
+    {{- if .Values.loadBalancerService.certificateArn }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.loadBalancerService.certificateArn }}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    {{- end }}
+    {{- if .Values.loadBalancerService.annotations }}
     {{- toYaml .Values.loadBalancerService.annotations | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   type: {{ .Values.loadBalancerService.type }}
   externalTrafficPolicy: {{ .Values.loadBalancerService.externalTrafficPolicy }}
