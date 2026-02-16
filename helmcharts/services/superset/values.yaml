@@ -506,6 +506,9 @@ configOverrides:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SECRET_KEY = 'xCHEuo3xQNLdqgvM7GAR4Gf9kjyQzFzIrGi1maZdb0xibHu47o5hIyAX'
 
+  proxy_fix: |
+    ENABLE_PROXY_FIX = True
+    PUBLIC_ROLE_LIKE = "Gamma"
   # map_box_key: |
   #  MAPBOX_API_KEY=''
 
