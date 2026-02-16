@@ -569,7 +569,7 @@ service:
   annotations: {}
 
 loadBalancerService:
-  enabled: true
+  enabled: false
   type: LoadBalancer
   externalTrafficPolicy: Local
   annotations:
