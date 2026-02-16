@@ -29,6 +29,11 @@ global:
     service.beta.kubernetes.io/aws-load-balancer-eip-allocations: "<fill-value>" # Update with the Elastic IP allocation
     service.beta.kubernetes.io/aws-load-balancer-subnets: "<fill-value>" # Update with the public subnet ID
 
+# Pass certificateArn for superset to access superset using subdomain
+superset:
+  loadBalancerService:
+    certificateArn: "arn:aws:acm:us-east-1:522814700227:certificate/8d0eab0e-804d-4941-b61d-11559789dd73"
+
 service_accounts:
   enabled: &create_sa true
   secor: &secor_sa_annotation
