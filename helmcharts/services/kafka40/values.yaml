@@ -156,7 +156,7 @@ log4j2: ""
 existingLog4j2ConfigMap: ""
 ## @param heapOpts Kafka Java Heap configuration
 ##
-heapOpts: -XX:InitialRAMPercentage=75 -XX:MaxRAMPercentage=75
+heapOpts: -Xmx1536m -Xms1536m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+HeapDumpOnOutOfMemoryError
 ## @param brokerRackAwareness.enabled Enable Kafka Rack Awareness
 ## @param brokerRackAwareness.cloudProvider Cloud provider to use to set Broker Rack Awareness. Allowed values: `aws-az`, `azure`
 ## @param brokerRackAwareness.azureApiVersion Metadata API version to use when brokerRackAwareness.cloudProvider is set to `azure`
@@ -705,7 +705,7 @@ controller:
   existingSecretConfig: ""
   ## @param controller.heapOpts Kafka Java Heap size for controller-eligible nodes
   ##
-  heapOpts: -Xmx1024m -Xms1024m
+  heapOpts: -Xmx1536m -Xms1536m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+HeapDumpOnOutOfMemoryError
   ## @param controller.command Override Kafka container command
   ##
   command: []
@@ -719,7 +719,10 @@ controller:
   ##   - name: KAFKA_CFG_BACKGROUND_THREADS
   ##     value: "10"
   ##
-  extraEnvVars: []
+  extraEnvVars:
+    - name: KAFKA_JVM_PERFORMANCE_OPTS
+      value: "-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+DisableExplicitGC -XX:+UseStringDeduplication"
+
   ## @param controller.extraEnvVarsCM ConfigMap with extra environment variables
   ##
   extraEnvVarsCM: ""
@@ -754,10 +757,10 @@ controller:
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 5
-    failureThreshold: 6
-    timeoutSeconds: 5
-    periodSeconds: 10
+    initialDelaySeconds: 30
+    failureThreshold: 10
+    timeoutSeconds: 10
+    periodSeconds: 15
     successThreshold: 1
   ## @param controller.startupProbe.enabled Enable startupProbe on Kafka containers
   ## @param controller.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
@@ -804,10 +807,10 @@ controller:
   resources:
     limits:
       cpu: 2
-      memory: 2048Mi
+      memory: 3072Mi
     requests:
-      cpu: 750m
-      memory: 512Mi
+      cpu: 1
+      memory: 2048Mi
   ## Kafka pods' Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param controller.podSecurityContext.enabled Enable security context for the pods
@@ -925,7 +928,7 @@ controller:
   ## @param controller.terminationGracePeriodSeconds Seconds the pod needs to gracefully terminate
   ## ref: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#hook-handler-execution
   ##
-  terminationGracePeriodSeconds: ""
+  terminationGracePeriodSeconds: "60"
   ## @param controller.podManagementPolicy StatefulSet controller supports relax its ordering guarantees while preserving its uniqueness and identity guarantees. There are two valid pod management policies: OrderedReady and Parallel
   ## ref: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#pod-management-policy
   ##
