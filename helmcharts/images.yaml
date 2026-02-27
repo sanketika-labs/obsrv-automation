@@ -22,7 +22,7 @@ images: &images
   command-api: &command-api # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
-    tag: "R2_CMD.110226-12"
+    tag: "R2_CMD.260226-23"
     digest: ""
 
   # dataset-api: #open source
@@ -34,7 +34,7 @@ images: &images
   dataset-api: &dataset-api # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
-    tag: "R1_API.110226-12"
+    tag: "R1_API.260226-23"
     digest: ""
 
   config-api: &config-api # registry: ""
@@ -45,7 +45,7 @@ images: &images
   web-console: &web-console # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_web_console"
-    tag: "R1_WEB_CONSOLE.110226-4"
+    tag: "R1_WEB_CONSOLE.250226-9"
     digest: ""
 
   ## PIPELINE ENTERPRISE
