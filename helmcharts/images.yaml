@@ -245,14 +245,15 @@ images: &images
     digest: ""
 
   secor: &secor
-    # registry: *global_registry
-    repository: "secor"
-    tag: "0.29.2-kafka-4.0"
+    registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "lms_sb_secor"
+    tag: "R1_SECOR.020326-2"
     digest: ""
 
   spark: &spark # registry: ""
-    repository: "sanketikahub/spark"
-    tag: "3.5.1-debian-12-r6"
+    registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "lms_sb_obsrv_automation"
+    tag: "R5_SPARK.020326-12"
     digest: ""
 
   cert_manager_cainjector: &cert_manager_cainjector
