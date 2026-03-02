@@ -17,7 +17,7 @@ namespaces:
 - postgresql
 - redis
 - s3-exporter
-# - secor
+- secor
 - spark
 - submit-ingestion
 - superset
