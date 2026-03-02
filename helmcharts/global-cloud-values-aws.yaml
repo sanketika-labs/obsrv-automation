@@ -32,7 +32,7 @@ global:
 # Pass certificateArn for superset to access superset using subdomain
 superset:
   loadBalancerService:
-    certificateArn: "arn:aws:acm:us-east-1:522814700227:certificate/8d0eab0e-804d-4941-b61d-11559789dd73"
+    certificateArn: "arn:aws:acm:us-east-1:522814700227:certificate/58ebbd43-ea69-4df3-857f-4e7e738e1fea"
 
 service_accounts:
   enabled: &create_sa true
