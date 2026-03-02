@@ -38,11 +38,11 @@ base_config: &base_config
   enabled: true
   replicas: 1
   threads: 2
-  timestamp_key: "obsrv_meta.syncts"
+  timestamp_key: "syncts"
   fallback_timestamp_key: "ets"
   kafka_broker_host: "{{.Values.global.kafka40.host}}"
   max_file_size: "100000000"
-  max_file_age: "14400"
+  max_file_age: "60"
   partition_prefix_enabled: "false"
   partition_prefix_key: ""
   partition_prefix_mapping: "{}"
@@ -67,7 +67,7 @@ secor_jobs:
     service_name: "ingest-backup"
     consumer_group: "ingest"
     base_path: "{{ .Values.base_path }}/ingest"
-    timestamp_key: "obsrv_meta.syncts"
+    timestamp_key: "syncts"
   raw-backup:
     <<: *base_config
     enabled: true
