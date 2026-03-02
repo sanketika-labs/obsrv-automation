@@ -117,7 +117,7 @@ obsrvtools)
     ;;
 additional)
     cp -rf ../obsrv additional
-    cp -rf ../services/{secor,postgresql-backup,masterdata-indexer-cron} additional/charts/
+    cp -rf ../services/{spark,secor,postgresql-backup,masterdata-indexer-cron} additional/charts/
     # copy cloud specific helm charts
     case $cloud_env in
     "aws")
