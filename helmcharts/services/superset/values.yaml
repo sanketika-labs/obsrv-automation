@@ -18,7 +18,7 @@ redis:
   db_index: 3
 
 replicaCount: 1
-oauth_enabled: true
+oauth_enabled: false
 
 adminUser:
   username: "admin"
@@ -28,7 +28,7 @@ adminUser:
   password: "admin123"
 
 oauth:
-  enabled: true
+  enabled: false
   client_id: ""
   client_secret: ""
   auth_token: ""
