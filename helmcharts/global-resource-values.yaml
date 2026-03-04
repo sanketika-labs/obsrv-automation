@@ -589,22 +589,22 @@ spark:
       name: spark-master-tmp
       # storageClassName: gp2
       storage:
-        size: 2Gi
+        size: 10Gi
     workerTmp:
       name: spark-worker-tmp
       # storageClassName: gp2
       storage:
-        size: 2Gi
+        size: 10Gi
     masterMetadata:
       name: spark-master-metadata
       # storageClassName: gp2
       storage:
-        size: 2Gi
+        size: 10Gi
     workerMetadata:
       name: spark-worker-metadata
       # storageClassName: gp2
       storage:
-        size: 2Gi
+        size: 10Gi
 
 superset:
   resources:
