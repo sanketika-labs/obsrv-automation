@@ -55,9 +55,11 @@ import logging
 import ast
 from cachelib.redis import RedisCache
 from flask import has_request_context, session, g
-from flask_login import current_user
 import urllib3
 import redis
+
+# Allow OAuth over HTTP (needed for non-HTTPS environments and proxy setups)
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 def env(key, default=None):
     return os.getenv(key, default)
