@@ -40,7 +40,7 @@ cognito:
   enabled: true
   region: "us-east-1"
   userpoolId: "us-east-1_QuCefvh0J"
-  domain: "us-east-1_qucefvh0j"
+  domain: "dev-lms-domain"
   clientId: "2j4gpkgpli50lejtjornn0fkmi"
   clientSecret: "1s2263tgiesaotkpeepppg5fn97e2easrpur5gef58vop8106fhg"
   redirectUrl: "https://dashboard.dev.lms.cognizant.com/oauth-authorized/cognito"
