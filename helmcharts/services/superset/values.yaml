@@ -38,13 +38,13 @@ oauth:
 
 cognito:
   enabled: true
-  region: "ap-south-1"
-  userpoolId: "ap-south-1_DEZAUYAt6"
-  domain: "ap-south-1dezauyat6"
-  clientId: "29902roud109qnth1kekcuei15"
-  clientSecret: "1t9dlgsf0t860ehvn45da9c3spia9onenl79ajj96ntsdaf6rfl4"
+  region: "us-east-1"
+  userpoolId: "us-east-1_QuCefvh0J"
+  domain: "us-east-1_qucefvh0j"
+  clientId: "2j4gpkgpli50lejtjornn0fkmi"
+  clientSecret: "1s2263tgiesaotkpeepppg5fn97e2easrpur5gef58vop8106fhg"
   redirectUrl: "https://dashboard.dev.lms.cognizant.com/oauth-authorized/cognito"
-  defaultRole: "Gamma"
+  defaultRole: "Admin"
 
 runAsUser: 1000
 
