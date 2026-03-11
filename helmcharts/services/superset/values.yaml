@@ -34,7 +34,7 @@ oauth:
   auth_token: ""
   email_whitelist_regex: ""
   whitelist_domain: ""
-  user_registration_role: "Gamma"
+  user_registration_role: "Admin"
 
 cognito:
   enabled: true
@@ -564,7 +564,7 @@ configOverrides:
 
   proxy_fix: |
     ENABLE_PROXY_FIX = True
-    PUBLIC_ROLE_LIKE = "Gamma"
+    PUBLIC_ROLE_LIKE = "Admin"
   # map_box_key: |
   #  MAPBOX_API_KEY=''
 
@@ -610,7 +610,7 @@ configOverrides:
     from custom_sso_security_manager import CustomSsoSecurityManager
     CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
     AUTH_USER_REGISTRATION = True
-    AUTH_USER_REGISTRATION_ROLE = os.getenv("COGNITO_DEFAULT_ROLE", "Gamma")
+    AUTH_USER_REGISTRATION_ROLE = os.getenv("COGNITO_DEFAULT_ROLE", "Admin")
     AUTH_ROLES_MAPPING = {}
     AUTH_ROLES_SYNC_AT_LOGIN = True
 
