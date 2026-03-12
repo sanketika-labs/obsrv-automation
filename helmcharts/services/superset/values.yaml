@@ -18,7 +18,7 @@ redis:
   db_index: 3
 
 replicaCount: 1
-oauth_enabled: false
+oauth_enabled: true
 
 adminUser:
   username: "admin"
@@ -34,7 +34,17 @@ oauth:
   auth_token: ""
   email_whitelist_regex: ""
   whitelist_domain: ""
-  user_registration_role: "Gamma"
+  user_registration_role: "Admin"
+
+cognito:
+  enabled: true
+  region: "us-east-1"
+  userpoolId: "us-east-1_QuCefvh0J"
+  domain: "dev-lms-domain"
+  clientId: "2j4gpkgpli50lejtjornn0fkmi"
+  clientSecret: "1s2263tgiesaotkpeepppg5fn97e2easrpur5gef58vop8106fhg"
+  redirectUrl: "https://dashboard.dev.lms.cognizant.com/oauth-authorized/cognito"
+  defaultRole: "Admin"
 
 runAsUser: 1000
 
@@ -59,7 +69,8 @@ envFromSecrets: []
 
 ## Extra environment variables that will be passed into pods
 ##
-extraEnv: {}
+extraEnv:
+  PREFERRED_URL_SCHEME: "https"
   # Extend timeout to allow long running queries.
   # GUNICORN_TIMEOUT: 300
 
@@ -426,60 +437,105 @@ extraConfigs:
 extraSecrets:
   custom_sso_security_manager.py: |
     import logging
-    import json
+    import os
+    import redis
     from superset.security import SupersetSecurityManager
     from flask_appbuilder.security.manager import AUTH_OAUTH
-    import redis
-    import os
 
     def env(key, default=None):
         return os.getenv(key, default)
 
     def set_token_for_user(user_id, token, expiration=86400):
-      sso_cache = redis.Redis(
-          host=env("REDIS_HOST"),
-          port=int(env("REDIS_PORT")),
-          password=env("REDIS_PASSWORD"),
-          db=int(env("REDIS_DB", 1)),
-          decode_responses=False,
-      )
-      print(f"✅ Setting token for user {user_id}: {token[:20]}... (expires in {expiration} seconds)")
-      sso_cache.setex(f"sso_user_token:{user_id}", expiration, token)
+        sso_cache = redis.Redis(
+            host=env("REDIS_HOST"),
+            port=int(env("REDIS_PORT")),
+            password=env("REDIS_PASSWORD"),
+            db=int(env("REDIS_DB", 1)),
+            decode_responses=False,
+        )
+        print(f"Setting token for user {user_id}: {token[:20]}... (expires in {expiration} seconds)")
+        sso_cache.setex(f"sso_user_token:{user_id}", expiration, token)
 
     class CustomSsoSecurityManager(SupersetSecurityManager):
-      def __init__(self, appbuilder):
-        super(CustomSsoSecurityManager, self).__init__(appbuilder)
-        app = self.appbuilder.get_app
-        app.config.setdefault("AUTH_ROLES_MAPPING", {})
-        app.config.setdefault("AUTH_TYPE", AUTH_OAUTH)
+        def __init__(self, appbuilder):
+            super(CustomSsoSecurityManager, self).__init__(appbuilder)
+            app = self.appbuilder.get_app
+            app.config.setdefault("AUTH_ROLES_MAPPING", {})
+            app.config.setdefault("AUTH_TYPE", AUTH_OAUTH)
 
-      def oauth_user_info(self, provider, response=None):
-        print("Oauth2 provider:", provider)
+        def oauth_user_info(self, provider, response=None):
+            logging.info("Oauth2 provider: %s", provider)
 
-        if provider == 'obsrv':
-          token_data = self.appbuilder.sm.oauth_remotes[provider].token
-          access_token = token_data.get("access_token") if token_data else None
+            if provider == "cognito":
+                token_data = self.appbuilder.sm.oauth_remotes[provider].token
+                access_token = token_data.get("access_token") if token_data else None
 
-          # As example, this line request a GET to base_url + '/' + userDetails with Bearer  Authentication,
-          # and expects that authorization server checks the token, and response with user details
-          me = self.appbuilder.sm.oauth_remotes[provider].get(
-            f'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/userinfo'
-          )
-          me.raise_for_status()
-          data = me.json()
-          logging.info("✅ User info from Keycloak: %s", data)
+                _region = env("COGNITO_REGION", "us-east-1")
+                _domain = env("COGNITO_DOMAIN", "")
+                userinfo_url = (
+                    f"https://{_domain}.auth.{_region}.amazoncognito.com/oauth2/userInfo"
+                )
+                me = self.appbuilder.sm.oauth_remotes[provider].get(userinfo_url)
+                me.raise_for_status()
+                data = me.json()
+                logging.info("User info from Cognito: %s", data)
 
-          if access_token and data["preferred_username"]:
-            set_token_for_user(data["preferred_username"], token_data.get("access_token"), token_data.get("expires_in"))
+                username = (
+                    data.get("username")
+                    or data.get("cognito:username")
+                    or data.get("sub", "")
+                )
+                first_name = data.get("given_name", "")
+                last_name = data.get("family_name", "")
+                if not first_name and not last_name:
+                    full = data.get("name", username)
+                    parts = full.split(" ", 1)
+                    first_name = parts[0]
+                    last_name = parts[1] if len(parts) > 1 else ""
 
-          return {
-            "name": data["name"],
-            "email": data["email"],
-            "first_name": data["given_name"],
-            "last_name": data["family_name"],
-            "id": data["preferred_username"],
-            "username": data["preferred_username"]
-          }
+                if access_token and username:
+                    expires = token_data.get("expires_in", 86400)
+                    set_token_for_user(username, access_token, expires)
+
+                groups = data.get("cognito:groups", [])
+                return {
+                    "name": data.get("name", f"{first_name} {last_name}".strip()),
+                    "email": data.get("email", ""),
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "id": username,
+                    "username": username,
+                    "role_keys": groups,
+                }
+
+            if provider == "obsrv":
+                token_data = self.appbuilder.sm.oauth_remotes[provider].token
+                access_token = token_data.get("access_token") if token_data else None
+
+                me = self.appbuilder.sm.oauth_remotes[provider].get(
+                    f'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/userinfo'
+                )
+                me.raise_for_status()
+                data = me.json()
+                logging.info("User info from Keycloak: %s", data)
+
+                if access_token and data.get("preferred_username"):
+                    set_token_for_user(
+                        data["preferred_username"],
+                        token_data.get("access_token"),
+                        token_data.get("expires_in", 86400),
+                    )
+
+                return {
+                    "name": data.get("name", ""),
+                    "email": data.get("email", ""),
+                    "first_name": data.get("given_name", ""),
+                    "last_name": data.get("family_name", ""),
+                    "id": data.get("preferred_username", ""),
+                    "username": data.get("preferred_username", ""),
+                }
+
+            return {}
 
 # A dictionary of overrides to append at the end of superset_config.py - the name does not matter
 # WARNING: the order is not guaranteed
@@ -506,45 +562,57 @@ configOverrides:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SECRET_KEY = 'xCHEuo3xQNLdqgvM7GAR4Gf9kjyQzFzIrGi1maZdb0xibHu47o5hIyAX'
 
+  proxy_fix: |
+    ENABLE_PROXY_FIX = True
+    PUBLIC_ROLE_LIKE = "Admin"
   # map_box_key: |
   #  MAPBOX_API_KEY=''
 
   oauth: |
+    import os
     from flask_appbuilder.security.manager import AUTH_OAUTH
+
+    _cognito_region = os.getenv("COGNITO_REGION", "us-east-1")
+    _cognito_domain = os.getenv("COGNITO_DOMAIN", "")
+    _cognito_userpool_id = os.getenv("COGNITO_USERPOOL_ID", "")
+    _cognito_base = f"https://{_cognito_domain}.auth.{_cognito_region}.amazoncognito.com"
 
     AUTH_TYPE = AUTH_OAUTH
 
     OAUTH_PROVIDERS = [
       {
-        'name': 'obsrv',
-        'token_key': 'access_token',
-        'icon': 'fa-key',
-        'remote_app': {
-            'client_id': '{{ .Values.global.oauth_configs.superset_client_id }}',
-            'client_secret': '{{ .Values.global.oauth_configs.superset_client_secret }}',
-            'server_metadata_url': 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/.well-known/openid-configuration',
-            'client_kwargs': {
-                'scope': 'openid email profile'
-            },
-            'access_token_method':'POST',    # HTTP Method to call access_token_url
-            'access_token_params':{        # Additional parameters for calls to access_token_url
-                'client_id':'{{ .Values.global.oauth_configs.superset_client_id }}'
-            },
-            'jwks_uri': 'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/certs',
-            'api_base_url':'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth',
-            'access_token_url':'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/token',
-            'authorize_url':'http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/auth/realms/obsrv/protocol/openid-connect/auth'
-        }
+        "name": "cognito",
+        "icon": "fa-amazon",
+        "token_key": "access_token",
+        "remote_app": {
+          "client_id": os.getenv("COGNITO_CLIENT_ID"),
+          "client_secret": os.getenv("COGNITO_CLIENT_SECRET"),
+          "api_base_url": f"{_cognito_base}/",
+          "access_token_url": f"{_cognito_base}/oauth2/token",
+          "authorize_url": f"{_cognito_base}/oauth2/authorize",
+          "jwks_uri": (
+            f"https://cognito-idp.{_cognito_region}.amazonaws.com"
+            f"/{_cognito_userpool_id}/.well-known/jwks.json"
+          ),
+          "server_metadata_url": (
+            f"https://cognito-idp.{_cognito_region}.amazonaws.com"
+            f"/{_cognito_userpool_id}/.well-known/openid-configuration"
+          ),
+          "client_kwargs": {
+            "scope": "openid email profile",
+            "token_endpoint_auth_method": "client_secret_post",
+          },
+          "redirect_uri": os.getenv("COGNITO_REDIRECT_URL"),
+        },
       }
     ]
-    AUTH_USER_REGISTRATION = True
-    # AUTH_OAUTH_REDIRECT_URI='http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/oauth-authorized/obsrv'
-    AUTH_OAUTH_REDIRECT_URI='http{{ if .Values.global.ssl_enabled }}s{{ end }}://{{ .Values.global.domain }}/oauth-authorized/obsrv'
-    AUTH_USER_REGISTRATION_ROLE = "Admin"
-    ENABLE_PROXY_FIX = {{ if .Values.global.ssl_enabled }}True{{ else }}False{{ end }}
 
     from custom_sso_security_manager import CustomSsoSecurityManager
     CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = os.getenv("COGNITO_DEFAULT_ROLE", "Admin")
+    AUTH_ROLES_MAPPING = {}
+    AUTH_ROLES_SYNC_AT_LOGIN = True
 
 configMountPath: "/app/pythonpath"
 extraConfigMountPath: "/app/configs"
@@ -564,6 +632,22 @@ service:
   type: ClusterIP
   port: 8088
   annotations: {}
+
+loadBalancerService:
+  enabled: true
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  certificateArn: ""
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8088
+    - name: https
+      port: 443
+      targetPort: 8088
 
 ingress:
   enabled: false

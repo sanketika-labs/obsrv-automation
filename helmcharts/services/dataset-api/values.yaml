@@ -6,7 +6,7 @@ replicaCount: 1
 namespace: dataset-api
 global:
   image:
-    registry: "sanketikahub"
+    registry: ""
 
 registry: ""
 repository: obsrv-api-service
@@ -27,6 +27,10 @@ commonLabels:
   system.dataset.management: "true"
 
 commonAnnotations: {}
+
+hooks:
+  grafanaHook:
+    enabled: false
 
 podAnnotations: {}
 
@@ -50,6 +54,19 @@ service:
     - name: http
       port: 3000
       targetPort: 3000
+
+loadBalancerService:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+  externalTrafficPolicy: Local
+  protocol: TCP
+  ports:
+    - name: http
+      port: 3000
+      targetport: 3000
 
 ingress:
   enabled: false
@@ -161,7 +178,7 @@ env:
   postgres_host: "{{ .Values.global.postgresql.host }}"
   postgres_port: "{{ .Values.global.postgresql.port }}"
   postgres_username: "{{ .Values.postgresqlUser | default .Values.global.postgresql.username }}"
-  postgres_password: "{{ .Values.postgresqlPassword | default .Values.global.postgresql.password }}"
+  postgres_password: "{{ .Values.postgresqlPassword | default .Values.global.postgresql.password | b64enc }}"
   postgres_database: obsrv
   denorm_redis_host: "{{ .Values.global.valkey_denorm.host }}"
   denorm_redis_port: "{{ .Values.global.valkey_denorm.port }}"

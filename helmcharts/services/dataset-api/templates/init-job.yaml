@@ -1,3 +1,4 @@
+{{- if .Values.hooks.grafanaHook.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -141,4 +142,4 @@ spec:
                   exit 0
               fi
       restartPolicy: OnFailure
-
+{{- end }}

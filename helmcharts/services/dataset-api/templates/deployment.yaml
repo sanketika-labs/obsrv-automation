@@ -63,8 +63,10 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ include "common.names.fullname" . }}-env
+          {{- if .Values.hooks.grafanaHook.enabled }}
           - secretRef:
               name: {{ include "common.names.fullname" . }}-grafana-secret
+          {{- end }}
           env:
           - name: user_token_public_key
             valueFrom:

@@ -1,0 +1,25 @@
+{{- if .Values.loadBalancerService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.names.fullname" . }}-nlb
+  namespace: {{ include "base.namespace" . }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.loadBalancerService.annotations }}
+  annotations:
+    {{- toYaml .Values.loadBalancerService.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.loadBalancerService.type }}
+  externalTrafficPolicy: {{ .Values.loadBalancerService.externalTrafficPolicy }}
+  allocateLoadBalancerNodePorts: true
+  protocol: {{ .Values.loadBalancerService.protocol }}
+  ports:
+  {{- range .Values.loadBalancerService.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "common.names.name" . }}
+{{- end }}

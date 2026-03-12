@@ -19,7 +19,7 @@ case $cloud_env in
         ;;
 esac
 
-cp -rf ../{global-values.yaml,global-resource-values.yaml,images.yaml,kube-prometheus-overrides.yaml} ./
+cp -rf ../{global-values.yaml,global-resource-values.yaml,images.yaml} ./
 
 if [ "$2" == "template" ]; then
     cmd="template ${@: 3}"
@@ -43,7 +43,7 @@ prerequisites)
     ;;
 coredb)
     cp -rf ../obsrv coredb
-    cp -rf ../services/{postgresql,kong,druid-operator,valkey-dedup,valkey-denorm} coredb/charts/
+    cp -rf ../services/{postgresql,druid-operator,valkey-dedup,valkey-denorm} coredb/charts/
 
     ssl_enabled=$(cat $cloud_file_name | grep 'ssl_enabled:' | awk '{ print $3}')
     if [ "$ssl_enabled" == "true" ]; then
@@ -62,20 +62,20 @@ kafka40)
     ;;
 migrations)
     cp -rf ../obsrv migrations
-    cp -rf ../services/{postgresql-migration,kubernetes-reflector,grafana-configs,letsencrypt-ssl} migrations/charts/
+    cp -rf ../services/{postgresql-migration,kubernetes-reflector,letsencrypt-ssl} migrations/charts/
 
     helm $cmd migrations ./migrations -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name
     rm -rf migrations
     ;;
 monitoring)
     cp -rf ../obsrv monitoring
-    cp -rf ../services/{kube-prometheus-stack,prometheus-pushgateway,kafka-message-exporter,kafka-exporter,alert-rules} monitoring/charts/
+    cp -rf ../services/{promtail,loki,kube-prometheus-stack,prometheus-pushgateway,kafka-message-exporter,kafka-exporter,alert-rules} monitoring/charts/
 
     if [ -z "$cloud_env" ]; then
         rm -rf monitoring/charts/loki/charts/minio
     fi
     
-    helm $cmd monitoring ./monitoring -n obsrv -f global-resource-values.yaml -f global-values.yaml  -f images.yaml -f kube-prometheus-overrides.yaml -f $cloud_file_name
+    helm $cmd monitoring ./monitoring -n obsrv -f global-resource-values.yaml -f global-values.yaml  -f images.yaml -f $cloud_file_name
     rm -rf monitoring
     ;;
 coreinfra)
@@ -117,7 +117,7 @@ obsrvtools)
     ;;
 additional)
     cp -rf ../obsrv additional
-    cp -rf ../services/{secor,system-rules-ingestor,postgresql-backup,kong-ingress-routes,volume-autoscaler,masterdata-indexer-cron} additional/charts/
+    cp -rf ../services/{secor,postgresql-backup,masterdata-indexer-cron} additional/charts/
     # copy cloud specific helm charts
     case $cloud_env in
     "aws")
@@ -145,8 +145,8 @@ core-setup)
     ;;
 all)
     bash $0 migrations ${@: 2}
-    bash $0 monitoring ${@: 2}
-    bash $0 oauth ${@: 2}
+    # bash $0 monitoring ${@: 2}
+    # bash $0 oauth ${@: 2}
     bash $0 coreinfra ${@: 2}
     bash $0 obsrvapis ${@: 2}
     # We are not installing these for now.
@@ -195,4 +195,4 @@ esac
 
 
 rm -rf $cloud_file_name
-rm -rf {global-values.yaml,global-resource-values.yaml,images.yaml,kube-prometheus-overrides.yaml}
+rm -rf {global-values.yaml,global-resource-values.yaml,images.yaml}

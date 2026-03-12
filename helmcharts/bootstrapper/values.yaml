@@ -13,7 +13,7 @@ namespaces:
 - keycloak
 # - loki
 # - minio
-- monitoring
+# - monitoring
 - postgresql
 - redis
 - s3-exporter

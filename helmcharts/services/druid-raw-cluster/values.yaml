@@ -297,7 +297,7 @@ zookeeper:
   namespace: *druidns
   image:
     registry: docker.io
-    repository: sanketikahub/zookeeper
+    repository: bitnamilegacy/zookeeper
     tag: 3.6
     pullPolicy: IfNotPresent
 

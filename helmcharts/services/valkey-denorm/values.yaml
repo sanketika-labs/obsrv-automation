@@ -1650,7 +1650,7 @@ metrics:
   ##
   image:
     registry: docker.io
-    repository: sanketikahub/redis-exporter
+    repository: bitnamilegacy/redis-exporter
     tag: 1.66.0-debian-12-r2
     digest: ""
     pullPolicy: IfNotPresent
