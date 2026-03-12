@@ -19,7 +19,8 @@ imagePullSecrets: &imagePullSecrets
 
 images: &images
   ## Obsrv Images
-  command-api: &command-api # registry: ""
+  command-api: &command-api #
+    registry: "sanketikahub"
     repository: obsrv-command-service
     tag: "2.0.0"
     digest: ""
@@ -31,6 +32,7 @@ images: &images
   #   digest: ""
 
   dataset-api: &dataset-api # registry: ""
+    registry: "sanketikahub"
     repository: obsrv-api-service
     tag: "2.0.1"
     digest: ""
@@ -41,6 +43,7 @@ images: &images
     digest: ""
 
   web-console: &web-console # registry: ""
+    registry: "sanketikahub"
     repository: "obsrv-web-console"
     tag: "1.4.2"
     digest: ""
@@ -71,6 +74,7 @@ images: &images
     digest: ""
 
   postgresql-backup: &postgresql-backup # registry: ""
+    registry: "sanketikahub"
     repository: postgresql-backup
     tag: "17.2-r0"
     digest: ""
