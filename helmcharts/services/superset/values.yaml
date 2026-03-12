@@ -37,13 +37,13 @@ oauth:
   user_registration_role: "Admin"
 
 cognito:
-  enabled: true
+  enabled: false
   region: "us-east-1"
-  userpoolId: "us-east-1_QuCefvh0J"
-  domain: "dev-lms-domain"
-  clientId: "2j4gpkgpli50lejtjornn0fkmi"
-  clientSecret: "1s2263tgiesaotkpeepppg5fn97e2easrpur5gef58vop8106fhg"
-  redirectUrl: "https://dashboard.dev.lms.cognizant.com/oauth-authorized/cognito"
+  userpoolId: ""
+  domain: ""
+  clientId: ""
+  clientSecret: ""
+  redirectUrl: ""
   defaultRole: "Admin"
 
 runAsUser: 1000
