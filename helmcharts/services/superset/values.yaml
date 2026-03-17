@@ -43,6 +43,8 @@ cognito:
   secretStore: "central-account-secret-store"
   secretArn: "arn:aws:secretsmanager:us-east-1:039612885605:secret:lms_sunbird_superset_secrets-ET9Cmq"
 
+serviceAccountName: "superset-sa"
+
 runAsUser: 1000
 
 # Install additional packages and do any other bootstrap configuration in this script
