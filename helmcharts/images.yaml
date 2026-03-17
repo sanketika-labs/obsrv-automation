@@ -22,7 +22,7 @@ images: &images
   command-api: &command-api # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
-    tag: "R2_CMD.260226-23"
+    tag: "R2_CMD.160326-26"
     digest: ""
 
   # dataset-api: #open source
@@ -34,7 +34,7 @@ images: &images
   dataset-api: &dataset-api # registry: ""
     registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
     repository: "lms_sb_obsrv_api_service"
-    tag: "R1_API.260226-23"
+    tag: "R1_API.160326-26"
     digest: ""
 
   config-api: &config-api # registry: ""
