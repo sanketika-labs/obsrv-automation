@@ -37,6 +37,12 @@ superset:
     name: "superset-sa"
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::522814700227:role/lms-cross-account-codebuild-role"
+  cognito:
+    enabled: true
+    region: "us-east-1"
+    defaultRole: "Admin"
+    secretStore: "central-account-secret-store"
+    secretArn: "arn:aws:secretsmanager:us-east-1:039612885605:secret:lms_sunbird_superset_secrets-ET9Cmq"
   loadBalancerService:
     certificateArn: "arn:aws:acm:us-east-1:522814700227:certificate/58ebbd43-ea69-4df3-857f-4e7e738e1fea"
 
