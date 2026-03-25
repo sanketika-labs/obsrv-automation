@@ -3,6 +3,7 @@ namespaces:
 - cert-manager
 - command-api
 - dataset-api
+- dataset-mgmt
 - druid-raw
 - flink
 # - hms
