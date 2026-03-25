@@ -84,6 +84,10 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ tpl .Values.envFromSecret . | quote }}
+            {{- if .Values.cognito.enabled }}
+            - secretRef:
+                name: {{ template "superset.fullname" . }}-cognito-env
+            {{- end }}
             {{- range .Values.envFromSecrets }}
             - secretRef:
                 name: {{ tpl . $ | quote }}
