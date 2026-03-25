@@ -59,85 +59,10 @@ tolerations: []
 ## Affinity rules
 affinity: {}
 
-## Datasets configuration
-## Each key is the dataset_id (used as the folder name in /app/datasets/<dataset_id>/)
-## Each entry must have:
-##   schema: |  (raw JSON string for data_schema)
-##   config: |  (raw JSON string for dataset_config)
-##
-## Add additional datasets by adding more entries to this map.
+## Datasets to manage.
+## Each entry is a dataset_id — must match a folder name under datasets/<dataset_id>/
+## containing schema.json and config.json.
+## To add a new dataset: add the id here and create the corresponding folder.
 datasets:
-  sb-telemetry-v10:
-    schema: |
-      {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "properties": {
-          "mid": {
-            "type": "string",
-            "arrival_format": "text",
-            "data_type": "string"
-          },
-          "ets": {
-            "type": "integer",
-            "arrival_format": "number",
-            "data_type": "epoch"
-          },
-          "eid": {
-            "type": "string",
-            "arrival_format": "text",
-            "data_type": "string"
-          }
-        },
-        "additionalProperties": true
-      }
-    config: |
-      {
-        "indexing_config": {
-          "olap_store_enabled": true,
-          "lakehouse_enabled": false,
-          "cache_enabled": false
-        },
-        "keys_config": {
-          "data_key": "",
-          "partition_key": "",
-          "timestamp_key": "obsrv_meta.syncts"
-        }
-      }
-  sb-telemetry-v11:
-    schema: |
-      {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "properties": {
-          "mid": {
-            "type": "string",
-            "arrival_format": "text",
-            "data_type": "string"
-          },
-          "ets": {
-            "type": "integer",
-            "arrival_format": "number",
-            "data_type": "epoch"
-          },
-          "eid": {
-            "type": "string",
-            "arrival_format": "text",
-            "data_type": "string"
-          }
-        },
-        "additionalProperties": true
-      }
-    config: |
-      {
-        "indexing_config": {
-          "olap_store_enabled": true,
-          "lakehouse_enabled": false,
-          "cache_enabled": false
-        },
-        "keys_config": {
-          "data_key": "",
-          "partition_key": "",
-          "timestamp_key": "obsrv_meta.syncts"
-        }
-      }
+  - sb-telemetry-v10
+  - sb-telemetry-v11
