@@ -1,0 +1,56 @@
+name: Build and Push Dataset Management to ECR
+run-name: Build and Push for ${{ github.ref }}
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  build-dataset-management-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Generate image tag
+        id: image-tag
+        run: |
+          DATE_TAG=$(date +%d%m%y)
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            IMAGE_TAG="R1_DATASET_MGMT.$DATE_TAG-${{ github.run_number }}"
+          else
+            IMAGE_TAG="R1_DATASET_MGMT.$DATE_TAG-${{ github.run_number }}-hotfix"
+          fi
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build docker image and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Dockerfiles/dataset-mgmt-automation
+          file: ./Dockerfiles/dataset-mgmt-automation/Dockerfile
+          push: true
+          tags: |
+            061051225269.dkr.ecr.us-east-1.amazonaws.com/lms_sb_dataset-mgmt-automation:${{ steps.image-tag.outputs.IMAGE_TAG }}
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.image-tag.outputs.IMAGE_TAG }}" -m "Release ${{ steps.image-tag.outputs.IMAGE_TAG }}"
+          git push origin "${{ steps.image-tag.outputs.IMAGE_TAG }}"
