@@ -65,4 +65,5 @@ affinity: {}
 ## To add a new dataset: add the id here and create the corresponding folder.
 datasets:
   - sb-telemetry-v10
+  - obsrv-automation-test
   - sb-telemetry-v11

@@ -1,0 +1,47 @@
+{
+  "id": "demo-telemetry",
+  "dataset_id": "demo-telemetry",
+  "type": "event",
+  "name": "demo-telemetry",
+
+  "validation_config": {
+    "validate": true,
+    "mode": "Strict"
+  },
+
+  "extraction_config": {
+    "is_batch_event": false,
+    "dedup_config": {
+      "drop_duplicates": true,
+      "dedup_key": "mid",
+      "dedup_period": 86400
+    }
+  },
+
+  "dedup_config": {
+    "drop_duplicates": true,
+    "dedup_key": "mid",
+    "dedup_period": 86400
+  },
+
+  "router_config": {
+    "topic": "demo-telemetry"
+  },
+
+  "dataset_config": {
+    "indexing_config": {
+      "olap_store_enabled": true,
+      "lakehouse_enabled": false,
+      "cache_enabled": false
+    },
+    "keys_config": {
+      "data_key": "mid",
+      "partition_key": "",
+      "timestamp_key": "ets"
+    }
+  },
+
+  "status": "Draft",
+  "api_version": "v2",
+  "version": 1
+}
