@@ -73,6 +73,12 @@ images: &images
     tag: "1.4.0"
     digest: ""
 
+  dataset-mgmt-automation: &dataset-mgmt-automation
+    registry: "ghcr.io"
+    repository: "maheshkumargangula/dataset-mgmt-automation"
+    tag: "sha-d844336"
+    digest: ""
+
   postgresql-backup: &postgresql-backup # registry: ""
     registry: 061051225269.dkr.ecr.us-east-1.amazonaws.com
     repository: lms_sb_obsrv_automation
@@ -450,6 +456,11 @@ internal: &internal
       <<: *trino
       imagePullSecrets: 
       - name: *dockerSecretName
+
+  dataset-mgmt-automation:
+    image:
+      repository: "ghcr.io/maheshkumargangula/dataset-mgmt-automation"
+      tag: "sha-d844336"
 
   postgresql-backup:
     <<: *postgresql-backup

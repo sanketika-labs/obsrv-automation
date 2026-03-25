@@ -17,6 +17,7 @@ defaults:
     secor_namespace: &secor-namespace "secor"
     command_api_namespace: &command-api-namespace "command-api"
     dataset_api_namespace: &dataset-api-namespace "dataset-api"
+    dataset_mgmt_namespace: &dataset-mgmt-namespace "dataset-mgmt"
     config_api_namespace: &config-api-namespace "config-api"
     kubernetes_reflector_namespace: &kubernetes-reflector-namespace "kubernetes-reflector"
     submit_ingestion_namespace: &submit-ingestion-namespace "submit-ingestion"
@@ -522,6 +523,15 @@ dataset-api: &dataset-api
     keycloak_audience: ""
     otel_enable: *otel_enable
     telemetry_log: '{"enable":true,"response_data":false}'
+
+dataset-mgmt-automation:
+  namespace: *dataset-mgmt-namespace
+  fullnameOverride: dataset-mgmt-automation
+  config:
+    baseUrl: *dataset-service-url
+  cronjob:
+    schedule: "0 2 * * *"
+    suspend: false
 
 config-api: &config-api
   namespace: *config-api-namespace

@@ -1,0 +1,22 @@
+{{/*
+  One ConfigMap per dataset — holds schema.json and config.json.
+  Each ConfigMap is named: <fullname>-dataset-<dataset_id>
+  Mounted at: /app/datasets/<dataset_id>/
+*/}}
+{{- range $datasetId, $files := .Values.datasets }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dataset-mgmt-automation.fullname" $ }}-dataset-{{ $datasetId }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    {{- include "dataset-mgmt-automation.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: dataset-config
+    dataset-id: {{ $datasetId | quote }}
+data:
+  schema.json: |
+    {{- $files.schema | nindent 4 }}
+  config.json: |
+    {{- $files.config | nindent 4 }}
+{{- end }}

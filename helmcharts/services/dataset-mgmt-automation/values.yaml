@@ -1,0 +1,143 @@
+## Kubernetes namespace for all resources
+namespace: dataset-mgmt
+
+## Override chart name / full name if needed
+nameOverride: ""
+fullnameOverride: ""
+
+## Container image
+image:
+  repository: ghcr.io/maheshkumargangula/dataset-mgmt-automation
+  tag: sha-d844336
+  pullPolicy: IfNotPresent
+
+## Image pull secrets for GHCR authentication in-cluster
+## Create secret first:
+##   kubectl create secret docker-registry ghcr-secret \
+##     --docker-server=ghcr.io \
+##     --docker-username=<github-username> \
+##     --docker-password=<github-token> \
+##     -n dataset-mgmt
+imagePullSecrets: []
+# - name: ghcr-secret
+
+## CronJob configuration
+cronjob:
+  ## Cron schedule expression (default: daily at 2am)
+  schedule: "0 2 * * *"
+  ## Set to true to suspend automatic scheduling (trigger manually via kubectl)
+  suspend: false
+  ## Prevent concurrent runs
+  concurrencyPolicy: Forbid
+  ## Number of successful/failed job histories to retain
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  ## Pod restart policy
+  restartPolicy: OnFailure
+
+## Application configuration
+config:
+  ## Base URL for the Dataset Management REST APIs
+  ## Internal Kubernetes service URL: dataset-api service in dataset-api namespace
+  baseUrl: "http://dataset-api.dataset-api.svc.cluster.local:3000"
+
+## Resource requests and limits for the job container
+resources: {}
+# requests:
+#   cpu: "100m"
+#   memory: "128Mi"
+# limits:
+#   cpu: "500m"
+#   memory: "256Mi"
+
+## Node selector for pod scheduling
+nodeSelector: {}
+
+## Tolerations
+tolerations: []
+
+## Affinity rules
+affinity: {}
+
+## Datasets configuration
+## Each key is the dataset_id (used as the folder name in /app/datasets/<dataset_id>/)
+## Each entry must have:
+##   schema: |  (raw JSON string for data_schema)
+##   config: |  (raw JSON string for dataset_config)
+##
+## Add additional datasets by adding more entries to this map.
+datasets:
+  sb-telemetry-v10:
+    schema: |
+      {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "mid": {
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string"
+          },
+          "ets": {
+            "type": "integer",
+            "arrival_format": "number",
+            "data_type": "epoch"
+          },
+          "eid": {
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    config: |
+      {
+        "indexing_config": {
+          "olap_store_enabled": true,
+          "lakehouse_enabled": false,
+          "cache_enabled": false
+        },
+        "keys_config": {
+          "data_key": "",
+          "partition_key": "",
+          "timestamp_key": "obsrv_meta.syncts"
+        }
+      }
+  sb-telemetry-v11:
+    schema: |
+      {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "mid": {
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string"
+          },
+          "ets": {
+            "type": "integer",
+            "arrival_format": "number",
+            "data_type": "epoch"
+          },
+          "eid": {
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    config: |
+      {
+        "indexing_config": {
+          "olap_store_enabled": true,
+          "lakehouse_enabled": false,
+          "cache_enabled": false
+        },
+        "keys_config": {
+          "data_key": "",
+          "partition_key": "",
+          "timestamp_key": "obsrv_meta.syncts"
+        }
+      }

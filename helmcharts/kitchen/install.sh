@@ -137,6 +137,12 @@ additional)
     helm $cmd additional ./additional -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name
     rm -rf additional
     ;;
+dataset-mgmt)
+    cp -rf ../obsrv dataset-mgmt
+    cp -rf ../services/dataset-mgmt-automation dataset-mgmt/charts/
+    helm $cmd dataset-mgmt ./dataset-mgmt -n obsrv -f global-resource-values.yaml -f global-values.yaml -f images.yaml -f $cloud_file_name
+    rm -rf dataset-mgmt
+    ;;
 core-setup)
     bash $0 bootstrap ${@: 2}
     bash $0 prerequisites ${@: 2}
@@ -149,6 +155,7 @@ all)
     # bash $0 oauth ${@: 2}
     bash $0 coreinfra ${@: 2}
     bash $0 obsrvapis ${@: 2}
+    bash $0 dataset-mgmt ${@: 2}
     # We are not installing these for now.
     # bash $0 hudi ${@: 2}
     # bash $0 otel ${@: 2}
