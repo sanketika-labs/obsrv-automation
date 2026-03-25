@@ -576,6 +576,11 @@ configOverrides:
     PUBLIC_ROLE_LIKE = "Admin"
   # map_box_key: |
   #  MAPBOX_API_KEY=''
+  http_headers_config: |
+    OVERRIDE_HTTP_HEADERS = {
+      "X-Frame-Options": "ALLOWALL",
+      "Content-Security-Policy": "frame-ancestors *",
+    }
 
   oauth: |
     import os
