@@ -66,4 +66,3 @@ affinity: {}
 datasets:
   - sb-telemetry-v10
   - obsrv-automation-test
-  - sb-telemetry-v11

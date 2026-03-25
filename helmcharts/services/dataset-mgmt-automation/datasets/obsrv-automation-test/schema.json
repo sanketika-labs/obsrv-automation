@@ -1,37 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "additionalProperties": false,
   "properties": {
-    "eid": {
-      "type": "string",
-      "description": "Event identifier"
-    },
     "mid": {
       "type": "string",
-      "description": "Message ID for deduplication"
+      "arrival_format": "text",
+      "data_type": "string"
     },
     "ets": {
       "type": "integer",
-      "description": "Event timestamp (epoch millis)"
+      "arrival_format": "number",
+      "data_type": "epoch"
     },
-    "actor": {
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "type": { "type": "string" }
-      },
-      "required": ["id"],
-      "additionalProperties": false
-    },
-    "edata": {
-      "type": "object",
-      "properties": {
-        "action": { "type": "string" },
-        "value": { "type": "number" }
-      },
-      "additionalProperties": true
+    "eid": {
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string"
     }
   },
-  "required": ["eid", "mid", "ets"]
+  "additionalProperties": true
 }
