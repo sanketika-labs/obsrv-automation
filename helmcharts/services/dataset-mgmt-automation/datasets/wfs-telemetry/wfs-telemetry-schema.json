@@ -1,0 +1,397 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "eid": {
+      "key": "eid",
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string",
+      "isRequired": true,
+      "resolved": true
+    },
+    "ets": {
+      "key": "ets",
+      "type": "integer",
+      "arrival_format": "number",
+      "data_type": "epoch",
+      "isRequired": true,
+      "resolved": true
+    },
+    "syncts": {
+      "key": "syncts",
+      "type": "integer",
+      "arrival_format": "number",
+      "data_type": "integer",
+      "isRequired": false,
+      "resolved": true
+    },
+    "ver": {
+      "key": "ver",
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string",
+      "isRequired": false,
+      "resolved": true
+    },
+    "mid": {
+      "key": "mid",
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string",
+      "isRequired": true,
+      "resolved": true
+    },
+    "uid": {
+      "key": "uid",
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string",
+      "isRequired": true,
+      "resolved": true
+    },
+    "context": {
+      "key": "context",
+      "type": "object",
+      "arrival_format": "object",
+      "data_type": "object",
+      "isRequired": false,
+      "resolved": true,
+      "properties": {
+        "pdata": {
+          "key": "pdata",
+          "type": "object",
+          "arrival_format": "object",
+          "data_type": "object",
+          "isRequired": false,
+          "resolved": true,
+          "properties": {
+            "id": {
+              "key": "id",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            },
+            "ver": {
+              "key": "ver",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            },
+            "model": {
+              "key": "model",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "granularity": {
+          "key": "granularity",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "date_range": {
+          "key": "date_range",
+          "type": "object",
+          "arrival_format": "object",
+          "data_type": "object",
+          "isRequired": false,
+          "resolved": true,
+          "properties": {
+            "from": {
+              "key": "from",
+              "type": "integer",
+              "arrival_format": "number",
+              "data_type": "epoch",
+              "isRequired": false,
+              "resolved": true
+            },
+            "to": {
+              "key": "to",
+              "type": "integer",
+              "arrival_format": "number",
+              "data_type": "epoch",
+              "isRequired": false,
+              "resolved": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "rollup": {
+          "key": "rollup",
+          "type": "object",
+          "arrival_format": "object",
+          "data_type": "object",
+          "isRequired": false,
+          "resolved": true,
+          "properties": {
+            "l1": {
+              "key": "l1",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "cdata": {
+          "key": "cdata",
+          "type": "array",
+          "arrival_format": "array",
+          "data_type": "array",
+          "isRequired": false,
+          "resolved": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "dimensions": {
+      "key": "dimensions",
+      "type": "object",
+      "arrival_format": "object",
+      "data_type": "object",
+      "isRequired": false,
+      "resolved": true,
+      "properties": {
+        "did": {
+          "key": "did",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "pdata": {
+          "key": "pdata",
+          "type": "object",
+          "arrival_format": "object",
+          "data_type": "object",
+          "isRequired": false,
+          "resolved": true,
+          "properties": {
+            "id": {
+              "key": "id",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            },
+            "ver": {
+              "key": "ver",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            },
+            "pid": {
+              "key": "pid",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "sid": {
+          "key": "sid",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "channel": {
+          "key": "channel",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "type": {
+          "key": "type",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "mode": {
+          "key": "mode",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "edata": {
+      "key": "edata",
+      "type": "object",
+      "arrival_format": "object",
+      "data_type": "object",
+      "isRequired": false,
+      "resolved": true,
+      "properties": {
+        "eks": {
+          "key": "eks",
+          "type": "object",
+          "arrival_format": "object",
+          "data_type": "object",
+          "isRequired": false,
+          "resolved": true,
+          "properties": {
+            "interact_events_per_min": {
+              "key": "interact_events_per_min",
+              "type": "number",
+              "arrival_format": "number",
+              "data_type": "double",
+              "isRequired": false,
+              "resolved": true
+            },
+            "start_time": {
+              "key": "start_time",
+              "type": "integer",
+              "arrival_format": "number",
+              "data_type": "epoch",
+              "isRequired": false,
+              "resolved": true
+            },
+            "interact_events_count": {
+              "key": "interact_events_count",
+              "type": "integer",
+              "arrival_format": "number",
+              "data_type": "integer",
+              "isRequired": false,
+              "resolved": true
+            },
+            "end_time": {
+              "key": "end_time",
+              "type": "integer",
+              "arrival_format": "number",
+              "data_type": "epoch",
+              "isRequired": false,
+              "resolved": true
+            },
+            "events_summary": {
+              "key": "events_summary",
+              "type": "array",
+              "arrival_format": "array",
+              "data_type": "array",
+              "isRequired": false,
+              "resolved": true
+            },
+            "page_summary": {
+              "key": "page_summary",
+              "type": "array",
+              "arrival_format": "array",
+              "data_type": "array",
+              "isRequired": false,
+              "resolved": true
+            },
+            "time_diff": {
+              "key": "time_diff",
+              "type": "number",
+              "arrival_format": "number",
+              "data_type": "double",
+              "isRequired": false,
+              "resolved": true
+            },
+            "telemetry_version": {
+              "key": "telemetry_version",
+              "type": "string",
+              "arrival_format": "text",
+              "data_type": "string",
+              "isRequired": false,
+              "resolved": true
+            },
+            "env_summary": {
+              "key": "env_summary",
+              "type": "array",
+              "arrival_format": "array",
+              "data_type": "array",
+              "isRequired": false,
+              "resolved": true
+            },
+            "time_spent": {
+              "key": "time_spent",
+              "type": "number",
+              "arrival_format": "number",
+              "data_type": "double",
+              "isRequired": true,
+              "resolved": true
+            },
+            "item_responses": {
+              "arrival_format": "array",
+              "data_type": "array",
+              "key": "item_responses",
+              "ref": "item_responses",
+              "required": false,
+              "isModified": true,
+              "isNewlyAdded": true,
+              "rollupType": "ignore",
+              "resolved": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "object": {
+      "key": "object",
+      "type": "object",
+      "arrival_format": "object",
+      "data_type": "object",
+      "isRequired": false,
+      "resolved": true,
+      "properties": {
+        "id": {
+          "key": "id",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "type": {
+          "key": "type",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        },
+        "ver": {
+          "key": "ver",
+          "type": "string",
+          "arrival_format": "text",
+          "data_type": "string",
+          "isRequired": false,
+          "resolved": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

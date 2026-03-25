@@ -1,0 +1,20 @@
+{
+  "indexing_config": {
+    "olap_store_enabled": true,
+    "lakehouse_enabled": false,
+    "cache_enabled": false
+  },
+  "keys_config": {
+    "data_key": "mid",
+    "partition_key": "",
+    "timestamp_key": "obsrv_meta.syncts"
+  },
+  "cache_config": {
+    "redis_db_host": "valkey-denorm-headless.redis.svc.cluster.local",
+    "redis_db_port": 6379,
+    "redis_db": 0
+  },
+  "file_upload_path": [
+    "api-service/user_uploads/telemetry_05586c.json"
+  ]
+}

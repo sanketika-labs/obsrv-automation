@@ -1,0 +1,884 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "eid": {
+        "key": "eid",
+        "type": "string",
+        "arrival_format": "text",
+        "data_type": "string",
+        "isRequired": false,
+        "resolved": true
+      },
+      "ver": {
+        "key": "ver",
+        "type": "string",
+        "arrival_format": "text",
+        "data_type": "string",
+        "isRequired": false,
+        "resolved": true
+      },
+      "syncts": {
+        "key": "syncts",
+        "type": "integer",
+        "arrival_format": "number",
+        "data_type": "epoch",
+        "isRequired": false,
+        "resolved": true
+      },
+      "ets": {
+        "key": "ets",
+        "type": "integer",
+        "arrival_format": "number",
+        "data_type": "epoch",
+        "isRequired": false,
+        "resolved": true
+      },
+      "flags": {
+        "key": "flags",
+        "type": "object",
+        "arrival_format": "object",
+        "data_type": "object",
+        "isRequired": false,
+        "resolved": true,
+        "properties": {
+          "ex_processed": {
+            "key": "ex_processed",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "pp_validation_processed": {
+            "key": "pp_validation_processed",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "pp_duplicate_skipped": {
+            "key": "pp_duplicate_skipped",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "user_denorm": {
+            "key": "user_denorm",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "device_denorm": {
+            "key": "device_denorm",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "loc_denorm": {
+            "key": "loc_denorm",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "content_denorm": {
+            "key": "content_denorm",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          },
+          "coll_denorm": {
+            "key": "coll_denorm",
+            "type": "boolean",
+            "arrival_format": "boolean",
+            "data_type": "boolean",
+            "isRequired": false,
+            "resolved": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "mid": {
+        "key": "mid",
+        "type": "string",
+        "arrival_format": "text",
+        "data_type": "string",
+        "isRequired": false,
+        "resolved": true
+      },
+      "actor": {
+        "key": "actor",
+        "type": "object",
+        "arrival_format": "object",
+        "data_type": "object",
+        "isRequired": false,
+        "resolved": true,
+        "properties": {
+          "id": {
+            "key": "id",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "type": {
+            "key": "type",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "edata": {
+        "key": "edata",
+        "type": "object",
+        "arrival_format": "object",
+        "data_type": "object",
+        "isRequired": false,
+        "resolved": true,
+        "properties": {
+          "type": {
+            "key": "type",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "duration": {
+            "key": "duration",
+            "type": "number",
+            "arrival_format": "number",
+            "data_type": "double",
+            "isRequired": false,
+            "resolved": true
+          },
+          "size": {
+            "key": "size",
+            "type": "integer",
+            "arrival_format": "number",
+            "data_type": "integer",
+            "isRequired": false,
+            "resolved": true
+          },
+          "query": {
+            "key": "query",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "filters": {
+            "key": "filters",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "objectType": {
+                "key": "objectType",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "version": {
+                "key": "version",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "status": {
+                "key": "status",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "id": {
+                "key": "id",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "isRootOrg": {
+                "key": "isRootOrg",
+                "type": "boolean",
+                "arrival_format": "boolean",
+                "data_type": "boolean",
+                "isRequired": false,
+                "resolved": true
+              },
+              "trackable.enabled": {
+                "key": "trackable.enabled",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "channel": {
+                "key": "channel",
+                "type": "object",
+                "arrival_format": "object",
+                "data_type": "object",
+                "isRequired": false,
+                "resolved": true,
+                "additionalProperties": false
+              },
+              "framework": {
+                "key": "framework",
+                "type": "object",
+                "arrival_format": "object",
+                "data_type": "object",
+                "isRequired": false,
+                "resolved": true,
+                "additionalProperties": false
+              },
+              "resourceType": {
+                "key": "resourceType",
+                "type": "object",
+                "arrival_format": "object",
+                "data_type": "object",
+                "isRequired": false,
+                "resolved": true,
+                "additionalProperties": false
+              },
+              "identifier": {
+                "key": "identifier",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "contentType": {
+                "key": "contentType",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "mimeType": {
+                "key": "mimeType",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "hashTagId": {
+                "key": "hashTagId",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "compatibilityLevel": {
+                "key": "compatibilityLevel",
+                "type": "object",
+                "arrival_format": "object",
+                "data_type": "object",
+                "isRequired": false,
+                "resolved": true,
+                "properties": {
+                  "min": {
+                    "key": "min",
+                    "type": "integer",
+                    "arrival_format": "number",
+                    "data_type": "integer",
+                    "isRequired": false,
+                    "resolved": true
+                  },
+                  "max": {
+                    "key": "max",
+                    "type": "integer",
+                    "arrival_format": "number",
+                    "data_type": "integer",
+                    "isRequired": false,
+                    "resolved": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "createdBy": {
+                "key": "createdBy",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "mediaType": {
+                "key": "mediaType",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "origin": {
+                "key": "origin",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "primaryCategory": {
+                "key": "primaryCategory",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "trackable": {
+                "key": "trackable",
+                "type": "string",
+                "arrival_format": "",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "sort": {
+            "key": "sort",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "lastUpdatedOn": {
+                "key": "lastUpdatedOn",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "topn": {
+            "key": "topn",
+            "type": "array",
+            "arrival_format": "array",
+            "data_type": "array",
+            "isRequired": false,
+            "resolved": true
+          },
+          "pageid": {
+            "key": "pageid",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "prevpageid": {
+            "key": "prevpageid",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "uri": {
+            "key": "uri",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "subtype": {
+            "key": "subtype",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "id": {
+            "key": "id",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "data": {
+            "key": "data",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "uaspec": {
+            "key": "uaspec",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "agent": {
+                "key": "agent",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "ver": {
+                "key": "ver",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "system": {
+                "key": "system",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "platform": {
+                "key": "platform",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "raw": {
+                "key": "raw",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "state": {
+            "key": "state",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "props": {
+            "key": "props",
+            "type": "array",
+            "arrival_format": "array",
+            "data_type": "array",
+            "isRequired": false,
+            "resolved": true
+          },
+          "summary": {
+            "key": "summary",
+            "type": "array",
+            "arrival_format": "array",
+            "data_type": "array",
+            "isRequired": false,
+            "resolved": true
+          },
+          "visits": {
+            "key": "visits",
+            "type": "array",
+            "arrival_format": "array",
+            "data_type": "array",
+            "isRequired": false,
+            "resolved": true
+          },
+          "prevstate": {
+            "key": "prevstate",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "dspec": {
+            "key": "dspec",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "os": {
+                "key": "os",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "make": {
+                "key": "make",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "id": {
+                "key": "id",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "idisk": {
+                "key": "idisk",
+                "type": "number",
+                "arrival_format": "number",
+                "data_type": "double",
+                "isRequired": false,
+                "resolved": true
+              },
+              "edisk": {
+                "key": "edisk",
+                "type": "number",
+                "arrival_format": "number",
+                "data_type": "double",
+                "isRequired": false,
+                "resolved": true
+              },
+              "scrn": {
+                "key": "scrn",
+                "type": "number",
+                "arrival_format": "number",
+                "data_type": "double",
+                "isRequired": false,
+                "resolved": true
+              },
+              "camera": {
+                "key": "camera",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "cpu": {
+                "key": "cpu",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "sims": {
+                "key": "sims",
+                "type": "integer",
+                "arrival_format": "number",
+                "data_type": "integer",
+                "isRequired": false,
+                "resolved": true
+              },
+              "webview": {
+                "key": "webview",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "extra": {
+            "key": "extra",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "pos": {
+                "key": "pos",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "values": {
+                "key": "values",
+                "type": "array",
+                "arrival_format": "array",
+                "data_type": "array",
+                "isRequired": false,
+                "resolved": true
+              },
+              "query": {
+                "key": "query",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "mode": {
+            "key": "mode",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "@timestamp": {
+        "key": "@timestamp",
+        "type": "string",
+        "arrival_format": "text",
+        "data_type": "date-time",
+        "isRequired": false,
+        "resolved": true
+      },
+      "context": {
+        "key": "context",
+        "type": "object",
+        "arrival_format": "object",
+        "data_type": "object",
+        "isRequired": false,
+        "resolved": true,
+        "properties": {
+          "channel": {
+            "key": "channel",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "pdata": {
+            "key": "pdata",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "id": {
+                "key": "id",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "ver": {
+                "key": "ver",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "pid": {
+                "key": "pid",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "env": {
+            "key": "env",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "sid": {
+            "key": "sid",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "rollup": {
+            "key": "rollup",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "l1": {
+                "key": "l1",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "l2": {
+                "key": "l2",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              },
+              "l3": {
+                "key": "l3",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "cdata": {
+            "key": "cdata",
+            "type": "array",
+            "arrival_format": "array",
+            "data_type": "array",
+            "isRequired": false,
+            "resolved": true
+          },
+          "did": {
+            "key": "did",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "uid": {
+            "key": "uid",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "object": {
+        "key": "object",
+        "type": "object",
+        "arrival_format": "object",
+        "data_type": "object",
+        "isRequired": false,
+        "resolved": true,
+        "properties": {
+          "id": {
+            "key": "id",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "type": {
+            "key": "type",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "ver": {
+            "key": "ver",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          },
+          "rollup": {
+            "key": "rollup",
+            "type": "object",
+            "arrival_format": "object",
+            "data_type": "object",
+            "isRequired": false,
+            "resolved": true,
+            "properties": {
+              "l1": {
+                "key": "l1",
+                "type": "string",
+                "arrival_format": "text",
+                "data_type": "string",
+                "isRequired": false,
+                "resolved": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "version": {
+            "key": "version",
+            "type": "string",
+            "arrival_format": "text",
+            "data_type": "string",
+            "isRequired": false,
+            "resolved": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "tags": {
+        "key": "tags",
+        "type": "array",
+        "arrival_format": "array",
+        "data_type": "array",
+        "isRequired": false,
+        "resolved": true
+      }
+    },
+    "additionalProperties": false
+  }
