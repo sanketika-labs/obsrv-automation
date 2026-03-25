@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "mid": {
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string"
+    },
+    "ets": {
+      "type": "integer",
+      "arrival_format": "number",
+      "data_type": "epoch"
+    },
+    "eid": {
+      "type": "string",
+      "arrival_format": "text",
+      "data_type": "string"
+    }
+  },
+  "additionalProperties": true
+}

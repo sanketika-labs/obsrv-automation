@@ -36,10 +36,10 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumes:
-            {{- range $datasetId, $_ := .Values.datasets }}
-            - name: dataset-{{ $datasetId }}
+            {{- range .Values.datasets }}
+            - name: dataset-{{ . }}
               configMap:
-                name: {{ include "dataset-mgmt-automation.fullname" $ }}-dataset-{{ $datasetId }}
+                name: {{ include "dataset-mgmt-automation.fullname" $ }}-dataset-{{ . }}
             {{- end }}
           containers:
             - name: {{ .Chart.Name }}
@@ -49,9 +49,9 @@ spec:
                 - name: BASE_URL
                   value: {{ .Values.config.baseUrl | quote }}
               volumeMounts:
-                {{- range $datasetId, $_ := .Values.datasets }}
-                - name: dataset-{{ $datasetId }}
-                  mountPath: /app/datasets/{{ $datasetId }}
+                {{- range .Values.datasets }}
+                - name: dataset-{{ . }}
+                  mountPath: /app/datasets/{{ . }}
                   readOnly: true
                 {{- end }}
               {{- with .Values.resources }}
