@@ -563,6 +563,14 @@ configOverrides:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SECRET_KEY = 'xCHEuo3xQNLdqgvM7GAR4Gf9kjyQzFzIrGi1maZdb0xibHu47o5hIyAX'
 
+  # Guest Token configuration for embedded dashboard support
+  # The GUEST_TOKEN_JWT_SECRET must match the secret used by the Lambda/backend generating guest tokens
+  guest_token_config: |
+    GUEST_TOKEN_JWT_SECRET = 'xCHEuo3xQNLdqgvM7GAR4Gf9kjyQzFzIrGi1maZdb0xibHu47o5hIyAX'
+    GUEST_TOKEN_JWT_AUDIENCE = 'superset'
+    GUEST_ROLE_NAME = 'Gamma'
+    GUEST_TOKEN_JWT_EXP_SECONDS = 3600  # 1 hour - adjust based on your security requirements
+
   proxy_fix: |
     ENABLE_PROXY_FIX = True
     PUBLIC_ROLE_LIKE = "Admin"
