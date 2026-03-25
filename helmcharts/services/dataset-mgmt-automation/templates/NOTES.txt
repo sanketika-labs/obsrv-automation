@@ -1,0 +1,31 @@
+## Dataset Management Automation — Helm Chart
+
+### Namespace
+All resources are deployed to the `{{ .Values.namespace }}` namespace.
+
+### Installed Resources
+- **Namespace**: `{{ .Values.namespace }}`
+- **CronJob**: `{{ include "dataset-mgmt-automation.fullname" . }}`
+- **ConfigMaps** (one per dataset):
+{{- range $datasetId, $_ := .Values.datasets }}
+  - `{{ include "dataset-mgmt-automation.fullname" $ }}-dataset-{{ $datasetId }}`
+{{- end }}
+
+### Manual Trigger
+To trigger the job on-demand (without waiting for the cron schedule):
+
+  kubectl create job --from=cronjob/{{ include "dataset-mgmt-automation.fullname" . }} \
+    dataset-mgmt-run-$(date +%s) \
+    -n {{ .Values.namespace }}
+
+### Suspend / Resume Auto-Schedule
+To suspend the automatic schedule:
+  helm upgrade {{ .Release.Name }} . --set cronjob.suspend=true -n {{ .Values.namespace }}
+
+To resume:
+  helm upgrade {{ .Release.Name }} . --set cronjob.suspend=false -n {{ .Values.namespace }}
+
+### Check Job Status
+  kubectl get cronjob -n {{ .Values.namespace }}
+  kubectl get jobs -n {{ .Values.namespace }}
+  kubectl get pods -n {{ .Values.namespace }}
