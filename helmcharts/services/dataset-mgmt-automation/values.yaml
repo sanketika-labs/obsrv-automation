@@ -7,8 +7,8 @@ fullnameOverride: ""
 
 ## Container image
 image:
-  repository: ghcr.io/maheshkumargangula/dataset-mgmt-automation
-  tag: sha-d844336
+  repository: 
+  tag: 
   pullPolicy: IfNotPresent
 
 ## Image pull secrets for GHCR authentication in-cluster
