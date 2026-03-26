@@ -74,9 +74,9 @@ images: &images
     digest: ""
 
   dataset-mgmt-automation: &dataset-mgmt-automation
-    registry: "ghcr.io"
-    repository: "maheshkumargangula/dataset-mgmt-automation"
-    tag: "sha-d844336"
+    registry: "061051225269.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "lms_sb_dataset-mgmt-automation"
+    tag: "R1_DATASET_MGMT.260326-1-hotfix"
     digest: ""
 
   postgresql-backup: &postgresql-backup # registry: ""
